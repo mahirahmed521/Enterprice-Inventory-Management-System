@@ -1,0 +1,101 @@
+/* Layout adapted from the supplied Dashtreme template; Stockroom styling below. */
+:root { --navy: #142c38; --teal: #137e73; --ink: #213640; --muted: #74818b; --line: #e7ecef; }
+* { box-sizing: border-box; }
+body { margin: 0; font-family: 'Segoe UI', Arial, sans-serif; font-size: 14px; color: var(--ink); background: #f5f7f9; }
+a { text-decoration: none; }
+button, a, input { -webkit-tap-highlight-color: transparent; }
+a:focus-visible, button:focus-visible { outline: 3px solid #42b9a6; outline-offset: 4px; }
+.brand { display: flex; align-items: center; color: white; font-size: 25px; font-weight: 700; letter-spacing: -.8px; gap: 10px; }
+.brand:hover { color: white; }
+.brand-icon { width: 37px; height: 37px; display: grid; place-items: center; color: #8ae0cc; background: #ffffff0e; border: 1px solid #ffffff20; border-radius: 10px; font-size: 25px; }
+.brand-dot { color: #82dac5; margin-left: -10px; }
+.sidebar-wrapper { width: 240px; position: fixed; inset: 0 auto 0 0; background: var(--navy); padding: 30px 20px; z-index: 30; display: flex; flex-direction: column; }
+.sidebar-wrapper .brand { padding-left: 5px; }
+.nav-label { color: #94a9b2; font-size: 10px; letter-spacing: 1.9px; margin: 53px 16px 16px; font-weight: 600; }
+.sidebar-link { display: flex; align-items: center; gap: 13px; padding: 13px 16px; margin-bottom: 7px; border-radius: 8px; color: #bfd0d7; font-weight: 500; }
+.sidebar-link i { font-size: 21px; }
+.sidebar-link:hover { background: #ffffff0b; color: #fff; }
+.sidebar-link.active { color: #b6f4e4; background: #ffffff10; box-shadow: inset 3px 0 #73cfb8; }
+.sidebar-bottom { margin-top: auto; }
+.workspace-note { margin: 20px 12px; padding-bottom: 20px; color: #b4c5cc; border-bottom: 1px solid #ffffff14; font-size: 12px; }
+.status-dot { display: inline-block; width: 7px; height: 7px; background: #47b99c; border-radius: 50%; margin-right: 7px; vertical-align: middle; }
+.topbar { height: 82px; margin-left: 240px; padding: 0 38px; background: #fff; border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; gap: 15px; }
+.breadcrumb-label { color: var(--muted); font-size: 13px; }
+.breadcrumb-label span { margin: 0 15px; color: #bdc6cc; }
+.breadcrumb-label strong { color: var(--ink); font-weight: 500; }
+.topbar-account { display: flex; align-items: center; gap: 11px; }
+.topbar-account strong { display: block; font-weight: 600; font-size: 13px; }
+.topbar-account small { color: var(--muted); font-size: 11px; display: block; }
+.avatar { display: inline-grid; place-items: center; width: 37px; height: 37px; border-radius: 50%; background: #e2f1eb; color: #287864; font-weight: 700; }
+.topbar-logout { color: var(--muted); font-size: 22px; margin-left: 14px; }
+.menu-toggle { display: none; padding: 0; font-size: 26px; }
+.page-wrapper { margin-left: 240px; }
+.page-content { padding: 35px 38px 28px; max-width: 1720px; margin: auto; }
+.page-heading { display: flex; justify-content: space-between; align-items: center; margin-bottom: 26px; gap: 20px; }
+.eyebrow { display: block; font-size: 10px; font-weight: 700; letter-spacing: 2px; color: var(--teal); margin-bottom: 10px; }
+h1 { font-size: 29px; font-weight: 650; letter-spacing: -.9px; margin-bottom: 8px; }
+.page-heading p { color: var(--muted); margin: 0; }
+.overview-badge { font-size: 12px; color: #60766c; background: #fff; border: 1px solid var(--line); padding: 9px 13px; border-radius: 7px; white-space: nowrap; }
+.welcome-card { position: relative; background: #e3eee9; border: 1px solid #d9e6e0; border-radius: 13px; padding: 29px 33px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 23px; overflow: hidden; }
+.welcome-label { color: #5a8073; font-size: 10px; letter-spacing: 1.8px; font-weight: 700; }
+.welcome-card h2 { font-size: 25px; font-weight: 600; letter-spacing: -.7px; margin: 12px 0 9px; }
+.welcome-card p { color: #5b746a; margin-bottom: 20px; }
+.btn-welcome { background: #fff; color: #245c4d; font-size: 12px; font-weight: 600; border: 1px solid #d1e3d9; padding: 9px 14px; }
+.btn-welcome:hover { background: #f6faf8; color: var(--teal); }
+.btn-welcome i { font-size: 18px; margin-left: 7px; vertical-align: middle; }
+.welcome-art { width: 132px; height: 132px; border-radius: 50%; display: grid; place-items: center; background: #d3e5db; color: #548e77; margin-right: 25px; font-size: 80px; transform: rotate(-9deg); flex-shrink: 0; }
+.card { border: 1px solid var(--line); border-radius: 11px; box-shadow: 0 2px 3px #21364002; }
+.stats-row { margin-bottom: 24px; }
+.stat-card { padding: 21px 22px; height: 100%; }
+.stat-top { display: flex; justify-content: space-between; align-items: center; color: #687985; font-size: 13px; font-weight: 500; }
+.stat-icon { width: 37px; height: 37px; display: grid; place-items: center; border-radius: 10px; font-size: 22px; }
+.teal { background: #e5f3ee; color: #29866b; }.blue { background: #eaf0fb; color: #577bba; }.purple { background: #f0ebf8; color: #8d70b5; }.amber { background: #fbf0df; color: #b98c42; }
+.stat-value { font-size: 32px; font-weight: 650; line-height: 1.3; margin: 10px 0 5px; }
+.stat-card small { color: #829099; font-size: 11px; }
+.panel-card { overflow: hidden; height: 100%; }
+.panel-heading { display: flex; justify-content: space-between; align-items: center; padding: 23px 23px 20px; gap: 12px; }
+.panel-heading h2 { font-size: 16px; font-weight: 650; margin-bottom: 7px; }
+.panel-heading p { font-size: 12px; color: var(--muted); margin: 0; }
+.soft-badge { font-size: 10px; color: #627e73; background: #edf5f0; border: 1px solid #dfebe4; border-radius: 5px; padding: 5px 8px; white-space: nowrap; }
+.inventory-table { font-size: 12px; margin-bottom: 0; }
+.inventory-table thead th { color: #7c8991; font-size: 10px; text-transform: uppercase; letter-spacing: .6px; font-weight: 600; background: #fafbfc; padding: 13px 22px; border-color: var(--line); white-space: nowrap; }
+.inventory-table td { padding: 20px 22px; border-color: var(--line); vertical-align: middle; color: #61727d; }
+.inventory-table strong { color: #344955; font-weight: 600; display: block; min-width: 150px; }
+.inventory-table small { display: block; font-size: 10px; color: #8b969e; margin-top: 5px; }
+.inventory-table tr:last-child td { border: 0; }
+.stock-badge { font-size: 10px; background: #eaf5ef; color: #2f8461; padding: 5px 8px; border-radius: 5px; white-space: nowrap; }
+.stock-badge.low { background: #fcf1dc; color: #976c27; }
+.account-details { text-align: center; padding: 0 25px 24px; }
+.avatar.large { width: 54px; height: 54px; font-size: 23px; margin: 0 0 12px; }
+.account-details h3 { font-size: 15px; font-weight: 650; margin-bottom: 6px; }
+.account-email { font-size: 12px; color: var(--muted); margin-bottom: 12px; overflow-wrap: anywhere; }
+.account-details hr { border-color: #c4cfd5; margin: 23px 0 17px; }
+.account-status { display: flex; justify-content: space-between; font-size: 11px; color: #79878f; }
+.account-status > span:last-child { color: #50816e; }
+.btn-outline-secondary { font-size: 12px; color: #5c717d; border-color: #dfe6ea; padding: 9px 12px; }
+.page-footer { padding: 0 38px 24px; display: flex; justify-content: space-between; color: #8c969e; font-size: 11px; }
+.sidebar-overlay { display: none; }
+@media (max-width: 1199px) { .welcome-art { margin-right: 0; } .overview-badge { display: none; } }
+@media (max-width: 991px) {
+    .sidebar-wrapper { transform: translateX(-100%); transition: transform .2s; }
+    .sidebar-open .sidebar-wrapper { transform: translateX(0); }
+    .sidebar-open .sidebar-overlay { display: block; position: fixed; inset: 0; background: #142c3877; border: 0; z-index: 25; }
+    .topbar, .page-wrapper { margin-left: 0; }
+    .menu-toggle { display: block; }
+    .page-content { padding: 28px 24px; }
+    .topbar { padding: 0 24px; }
+    .page-footer { padding: 0 24px 24px; }
+}
+@media (max-width: 575px) {
+    .topbar { height: 72px; padding: 0 18px; }
+    .breadcrumb-label { display: none; }
+    .page-content { padding: 25px 17px; }
+    h1 { font-size: 26px; }
+    .page-heading p { font-size: 12px; }
+    .welcome-card { padding: 24px; }
+    .welcome-card h2 { font-size: 22px; overflow-wrap: anywhere; }
+    .welcome-art { display: none; }
+    .stat-card { padding: 18px 22px; }
+    .inventory-table td, .inventory-table thead th { padding: 16px; }
+    .page-footer { padding: 0 17px 22px; font-size: 10px; }
+}
