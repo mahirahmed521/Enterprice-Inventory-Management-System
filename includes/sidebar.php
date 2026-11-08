@@ -11,7 +11,7 @@ $navigation = [
     'BUSINESS' => [
         ['suppliers.php', 'Suppliers', 'bx-store-alt'],
         ['customers.php', 'Customers', 'bx-group'],
-        ['purchase_orders.php', 'Purchase orders', 'bx-cart-download'],
+        ['purchase_orders.php', 'Purchase orders', 'bxs-cart-download'],
         ['sales_orders.php', 'Sales orders', 'bx-cart'],
         ['stock_movements.php', 'Stock movements', 'bx-transfer'],
     ],

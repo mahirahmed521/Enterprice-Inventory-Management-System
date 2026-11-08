@@ -11,7 +11,7 @@ $pageTitle = 'Overview';
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Overview | Stockroom</title>
     <?php include '../includes/admin_css.php'; ?>
-    <link rel="stylesheet" href="../assets/css/dashboard.css?v=2">
+    <link rel="stylesheet" href="../assets/css/dashboard.css?v=<?php echo filemtime(__DIR__ . '/../assets/css/dashboard.css'); ?>">
 </head>
 <body class="workspace-page">
     <?php include '../includes/sidebar.php'; ?>

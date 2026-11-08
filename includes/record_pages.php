@@ -44,7 +44,7 @@ $recordPages = [
         'sql' => 'SELECT w.warehouse_name AS warehouse, p.product_name AS product, p.sku, ws.quantity_on_hand, ws.quantity_reserved, ws.quantity_on_hand-ws.quantity_reserved AS available, ws.aisle_bin_location, ws.updated_at FROM warehouse_stock ws JOIN warehouses w ON w.warehouse_id=ws.warehouse_id JOIN products p ON p.product_id=ws.product_id ORDER BY w.warehouse_name,p.product_name',
     ],
     'purchase_orders' => [
-        'title' => 'Purchase orders', 'icon' => 'bx-cart-download', 'group' => 'ORDERS & ACTIVITY',
+        'title' => 'Purchase orders', 'icon' => 'bxs-cart-download', 'group' => 'ORDERS & ACTIVITY',
         'description' => 'Track supplier orders and open each order to see its line items.',
         'columns' => ['po_number' => 'Order', 'supplier' => 'Supplier', 'warehouse' => 'Warehouse', 'status' => 'Status', 'order_date' => 'Ordered', 'expected_date' => 'Expected', 'total_amount' => 'Total', 'created_by_name' => 'Created by'],
         'filter' => 'status', 'decimal' => ['total_amount'], 'order_key' => 'po_id',

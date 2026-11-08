@@ -8,26 +8,35 @@ if (isset($_SESSION['user_id'])) {
 
 $error = '';
 $email = '';
-
+$password = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = trim((string) ($_POST['email'] ?? ''));
-    $password = (string) ($_POST['password'] ?? '');
 
-    if ($email === '' || $password === '') {
+    if (isset($_POST['email']) && is_string($_POST['email'])) {
+        $email = trim($_POST['email']);
+    }
+    if (isset($_POST['password']) && is_string($_POST['password'])) {
+        $password = $_POST['password'];
+    }
+
+    if ($email == '' || $password == '') {
         $error = 'Please enter your email and password.';
     } else {
         require_once '../config/db.php';
-        $statement = mysqli_prepare($conn, 'SELECT user_id, username, email, password_hash, role, is_active FROM users WHERE email = ? LIMIT 1');
-        mysqli_stmt_bind_param($statement, 's', $email);
-        mysqli_stmt_execute($statement);
-        $user = mysqli_fetch_assoc(mysqli_stmt_get_result($statement));
 
-        // The imported database already contains bcrypt password hashes.
-        if ($user && password_verify($password, $user['password_hash'])) {
-            if ((int) $user['is_active'] !== 1) {
+        $safeEmail = mysqli_real_escape_string($conn, $email);
+        $sql = "SELECT * FROM users WHERE email = '$safeEmail' LIMIT 1";
+        $result = mysqli_query($conn, $sql);
+
+        if (mysqli_num_rows($result) == 1) {
+            $user = mysqli_fetch_assoc($result);
+
+            if (!password_verify($password, $user['password_hash'])) {
+                $error = 'Email or password is incorrect.';
+            } elseif ($user['is_active'] == 0) {
                 $error = 'Your account is inactive. Please contact your administrator.';
             } else {
+
                 session_regenerate_id(true);
                 $_SESSION['user_id'] = $user['user_id'];
                 $_SESSION['name'] = $user['username'];

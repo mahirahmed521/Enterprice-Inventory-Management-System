@@ -26,7 +26,7 @@ function record_escape($value): string {
     <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?php echo $pageTitle; ?> | Stockroom</title>
     <?php include __DIR__ . '/admin_css.php'; ?>
-    <link rel="stylesheet" href="../assets/css/dashboard.css?v=2">
+    <link rel="stylesheet" href="../assets/css/dashboard.css?v=<?php echo filemtime(__DIR__ . '/../assets/css/dashboard.css'); ?>">
 </head>
 <body class="workspace-page">
     <?php include __DIR__ . '/sidebar.php'; include __DIR__ . '/topbar.php'; ?>
