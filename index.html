@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Stockroom | Customer store</title>
+    <link rel="stylesheet" href="assets/css/icons.css">
+    <link rel="stylesheet" href="assets/css/stockroom.css">
+</head>
+<body>
+<header class="site-header"><div class="bar"><a class="brand" href="index.html"><i class="bx bx-package" aria-hidden="true"></i>Stockroom<span>.</span></a><nav aria-label="Main navigation"><a href="catalog.php">Catalog</a><a class="nav-action" href="admin/index.php">Sign in <span aria-hidden="true">↗</span></a></nav></div></header>
+<main>
+    <section class="storefront">
+        <div class="hero">
+            <h1>Warehouse<br><em>catalog.</em></h1>
+            <p>Find products by name or SKU, check stock and place an order with your warehouse.</p>
+            <form class="search" action="catalog.php">
+                <label for="product-search">Find a product</label>
+                <div class="search-box"><i class="bx bx-search" aria-hidden="true"></i>
+                    <input id="product-search" type="search" name="q" placeholder="Product name or SKU">
+                    <button>Search</button>
+                </div>
+            </form>
+            <a class="browse" href="catalog.php">Browse the catalog <span aria-hidden="true">→</span></a>
+        </div>
+        <img class="hero-image" src="assets/images/warehouse-floor.webp" alt="Warehouse floor with stock organized in rows of yellow bins" width="1400" height="933">
+    </section>
+    <section aria-labelledby="workspace-heading">
+        <h2 id="workspace-heading">Your workspace</h2>
+        <div class="grid shortcuts">
+            <a class="card" href="admin/sales_orders.php"><i class="bx bx-receipt" aria-hidden="true"></i><strong>My orders</strong><span>Track orders and shipments.</span></a>
+            <a class="card" href="admin/dashboard.php"><i class="bx bx-grid-alt" aria-hidden="true"></i><strong>My dashboard</strong><span>Open your role’s workspace.</span></a>
+            <a class="card" href="admin/signup.php"><i class="bx bx-user-plus" aria-hidden="true"></i><strong>Create an account</strong><span>Register as a buyer or team member.</span></a>
+        </div>
+    </section>
+</main>
+</body>
+</html>

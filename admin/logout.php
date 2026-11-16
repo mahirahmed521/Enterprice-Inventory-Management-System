@@ -1,6 +1,6 @@
 <?php
 session_start();
-session_unset();
+$_SESSION = [];
 session_destroy();
-header('Location: index.php?logged_out=1');
+header('Location: ../index.html');
 exit;

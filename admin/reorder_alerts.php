@@ -1,26 +1,16 @@
 <?php
-require_once '../includes/auth.php';
 $pageTitle = 'Reorder alerts';
-?>
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Reorder alerts | Stockroom</title>
-    <?php include '../includes/admin_css.php'; ?>
-    <link rel="stylesheet" href="../assets/css/dashboard.css">
-    <link rel="stylesheet" href="../assets/css/business-overview.css">
-</head>
-<body class="workspace-page">
-    <?php include '../includes/sidebar.php'; ?>
-    <?php include '../includes/topbar.php'; ?>
-    <main class="page-wrapper">
-        <div class="page-content">
-            <?php include '../templates/reorder_alerts.html'; ?>
-        </div>
-        <?php include '../includes/footer.php'; ?>
-    </main>
-    <?php include '../includes/admin_script.php'; ?>
-</body>
-</html>
+$section = 'Reports';
+require '../includes/auth.php';
+if ($supervisor == false) {
+    exit('Access denied.');
+}
+
+$sql = "SELECT a.sku,a.product_name,a.available_to_sell,a.reorder_point,p.reorder_quantity,s.company_name FROM vw_reorder_alerts a JOIN products p USING(product_id) LEFT JOIN suppliers s ON s.supplier_id=p.preferred_supplier_id WHERE p.is_active=1 ORDER BY a.available_to_sell,a.sku";
+$rows = mysqli_query($conn, $sql);
+if ($rows == false) {
+    exit('Could not load this report.');
+}
+include '../includes/workspace.php';
+include '../templates/reorder_alerts.php';
+include '../includes/end.php';

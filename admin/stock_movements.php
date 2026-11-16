@@ -1,26 +1,90 @@
 <?php
-require_once '../includes/auth.php';
+require_once __DIR__ . '/../includes/check_fields.php';
 $pageTitle = 'Stock movements';
-?>
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Stock movements | Stockroom</title>
-    <?php include '../includes/admin_css.php'; ?>
-    <link rel="stylesheet" href="../assets/css/dashboard.css">
-    <link rel="stylesheet" href="../assets/css/business-overview.css">
-</head>
-<body class="workspace-page">
-    <?php include '../includes/sidebar.php'; ?>
-    <?php include '../includes/topbar.php'; ?>
-    <main class="page-wrapper">
-        <div class="page-content">
-            <?php include '../templates/stock_movements.html'; ?>
-        </div>
-        <?php include '../includes/footer.php'; ?>
-    </main>
-    <?php include '../includes/admin_script.php'; ?>
-</body>
-</html>
+$section = 'Warehouse operations';
+$error = '';
+$action = '';
+$warehouse_id = '';
+$product_id = '';
+$destination = '';
+$quantity = '';
+$notes = '';
+
+if (isset($_POST['action'])) {
+    $action = trim($_POST['action']);
+}
+if (isset($_POST['warehouse_id'])) {
+    $warehouse_id = trim($_POST['warehouse_id']);
+}
+if (isset($_POST['product_id'])) {
+    $product_id = trim($_POST['product_id']);
+}
+if (isset($_POST['destination'])) {
+    $destination = trim($_POST['destination']);
+}
+if (isset($_POST['quantity'])) {
+    $quantity = trim($_POST['quantity']);
+}
+if (isset($_POST['notes'])) {
+    $notes = trim($_POST['notes']);
+}
+if (ctype_digit($warehouse_id) == false) {
+    $warehouse_id = 0;
+}
+if (ctype_digit($product_id) == false) {
+    $product_id = 0;
+}
+if (ctype_digit($destination) == false) {
+    $destination = 0;
+}
+require '../includes/auth.php';
+if ($warehouse_access == false) {
+    exit('Access denied.');
+}
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $valid_movement = false;
+    $same_warehouse = false;
+    if ($action == 'transfer') {
+        $valid_movement = true;
+        if ($warehouse_id == $destination) {
+            $same_warehouse = true;
+        }
+    } elseif ($action == 'increase') {
+        $valid_movement = true;
+    } elseif ($action == 'decrease') {
+        $valid_movement = true;
+    }
+    if (ctype_digit($quantity) == false) {
+        $error = 'Enter a positive whole quantity.';
+    } elseif ($quantity < 1) {
+        $error = 'Enter a positive whole quantity.';
+    } elseif ($notes == '') {
+        $error = 'Enter the reason for this movement.';
+    } elseif ($valid_movement == false) {
+        $error = 'Choose a movement type.';
+    } elseif ($same_warehouse) {
+        $error = 'Choose a different destination warehouse.';
+    } else {
+        mysqli_query($conn, 'START TRANSACTION');
+        include '../includes/post_movement.php';
+        if ($error == '') {
+            if (mysqli_query($conn, 'COMMIT')) {
+                $_SESSION['notice'] = 'Movement posted.';
+                header('Location: stock_movements.php');
+                exit;
+            }
+        }
+        mysqli_query($conn, 'ROLLBACK');
+        if ($error == '') {
+            $error = 'Could not save the movement.';
+        }
+    }
+}
+$sql = "SELECT m.*,w.warehouse_name,p.sku,u.username FROM stock_movements m
+        JOIN warehouses w USING(warehouse_id) JOIN products p USING(product_id)
+        LEFT JOIN users u ON u.user_id=m.performed_by ORDER BY m.movement_id DESC";
+$rows = mysqli_query($conn, $sql);
+include '../includes/workspace.php';
+include '../templates/stock_movements.php';
+include '../includes/end.php';

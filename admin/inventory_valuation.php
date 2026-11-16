@@ -1,26 +1,22 @@
 <?php
-require_once '../includes/auth.php';
 $pageTitle = 'Inventory valuation';
-?>
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Inventory valuation | Stockroom</title>
-    <?php include '../includes/admin_css.php'; ?>
-    <link rel="stylesheet" href="../assets/css/dashboard.css">
-    <link rel="stylesheet" href="../assets/css/business-overview.css">
-</head>
-<body class="workspace-page">
-    <?php include '../includes/sidebar.php'; ?>
-    <?php include '../includes/topbar.php'; ?>
-    <main class="page-wrapper">
-        <div class="page-content">
-            <?php include '../templates/inventory_valuation.html'; ?>
-        </div>
-        <?php include '../includes/footer.php'; ?>
-    </main>
-    <?php include '../includes/admin_script.php'; ?>
-</body>
-</html>
+$section = 'Reports';
+$required_role = 'ADMIN';
+require '../includes/auth.php';
+
+$sql = "SELECT * FROM vw_inventory_valuation ORDER BY product_name,sku";
+$rows = mysqli_query($conn, $sql);
+if ($rows == false) {
+    exit('Could not load this report.');
+}
+$total = mysqli_query($conn, 'SELECT SUM(total_inventory_cost) AS total FROM vw_inventory_valuation');
+if ($total == false) {
+    exit('Could not calculate inventory value.');
+}
+$value = mysqli_fetch_assoc($total);
+if ($value['total'] === null) {
+    $value['total'] = 0;
+}
+include '../includes/workspace.php';
+include '../templates/inventory_valuation.php';
+include '../includes/end.php';

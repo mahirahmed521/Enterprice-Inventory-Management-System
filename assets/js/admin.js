@@ -6,12 +6,20 @@ function closeMenu() {
     menuButton.setAttribute('aria-expanded', 'false');
     overlay.hidden = true;
 }
+
 menuButton.addEventListener('click', function () {
-    const open = document.body.classList.toggle('sidebar-open');
-    menuButton.setAttribute('aria-expanded', String(open));
-    overlay.hidden = !open;
+    if (document.body.classList.contains('sidebar-open')) {
+        closeMenu();
+    } else {
+        document.body.classList.add('sidebar-open');
+        menuButton.setAttribute('aria-expanded', 'true');
+        overlay.hidden = false;
+    }
 });
+
 overlay.addEventListener('click', closeMenu);
 document.addEventListener('keydown', function (event) {
-    if (event.key === 'Escape') closeMenu();
+    if (event.key === 'Escape') {
+        closeMenu();
+    }
 });

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Nov 07, 2026 at 06:41 PM
+-- Generation Time: Nov 15, 2026 at 06:02 PM
 -- Server version: 8.4.3
 -- PHP Version: 8.3.36
 
@@ -30,8 +30,8 @@ SET time_zone = "+00:00";
 CREATE TABLE `categories` (
   `category_id` int NOT NULL,
   `parent_id` int DEFAULT NULL,
-  `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL
+  `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -51,10 +51,10 @@ INSERT INTO `categories` (`category_id`, `parent_id`, `name`, `description`) VAL
 
 CREATE TABLE `customers` (
   `customer_id` int NOT NULL,
-  `customer_name` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `email` varchar(150) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `phone` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `shipping_address` text COLLATE utf8mb4_unicode_ci,
+  `customer_name` varchar(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `phone` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `shipping_address` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -74,12 +74,12 @@ INSERT INTO `customers` (`customer_id`, `customer_name`, `email`, `phone`, `ship
 
 CREATE TABLE `products` (
   `product_id` int NOT NULL,
-  `sku` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `barcode` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `product_name` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `sku` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `barcode` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `product_name` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `category_id` int DEFAULT NULL,
   `preferred_supplier_id` int DEFAULT NULL,
-  `unit_of_measure` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pcs',
+  `unit_of_measure` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pcs',
   `cost_price` decimal(12,2) NOT NULL DEFAULT '0.00',
   `selling_price` decimal(12,2) NOT NULL DEFAULT '0.00',
   `tax_rate` decimal(5,2) NOT NULL DEFAULT '0.00',
@@ -107,10 +107,10 @@ INSERT INTO `products` (`product_id`, `sku`, `barcode`, `product_name`, `categor
 
 CREATE TABLE `purchase_orders` (
   `po_id` int NOT NULL,
-  `po_number` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `po_number` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `supplier_id` int NOT NULL,
   `warehouse_id` int NOT NULL,
-  `status` enum('DRAFT','ORDERED','PARTIAL','RECEIVED','CANCELLED') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'DRAFT',
+  `status` enum('DRAFT','ORDERED','PARTIAL','RECEIVED','CANCELLED') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'DRAFT',
   `order_date` date NOT NULL,
   `expected_date` date DEFAULT NULL,
   `total_amount` decimal(12,2) NOT NULL DEFAULT '0.00',
@@ -148,6 +148,16 @@ INSERT INTO `purchase_order_items` (`po_item_id`, `po_id`, `product_id`, `quanti
 (1, 1, 1, 50, 50, 8.50),
 (2, 1, 2, 50, 50, 32.00);
 
+--
+-- Triggers `purchase_order_items`
+--
+DELIMITER $$
+CREATE TRIGGER `trg_update_po_total` AFTER INSERT ON `purchase_order_items` FOR EACH ROW BEGIN
+    UPDATE purchase_orders SET total_amount = total_amount + NEW.quantity_ordered * NEW.unit_cost WHERE po_id = NEW.po_id;
+END
+$$
+DELIMITER ;
+
 -- --------------------------------------------------------
 
 --
@@ -156,10 +166,10 @@ INSERT INTO `purchase_order_items` (`po_item_id`, `po_id`, `product_id`, `quanti
 
 CREATE TABLE `sales_orders` (
   `so_id` int NOT NULL,
-  `so_number` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `so_number` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `customer_id` int NOT NULL,
   `warehouse_id` int NOT NULL,
-  `status` enum('PENDING','CONFIRMED','SHIPPED','CANCELLED') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'PENDING',
+  `status` enum('PENDING','CONFIRMED','SHIPPED','CANCELLED') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'PENDING',
   `order_date` date NOT NULL,
   `total_amount` decimal(12,2) NOT NULL DEFAULT '0.00',
   `created_by` int DEFAULT NULL,
@@ -180,6 +190,21 @@ CREATE TABLE `sales_order_items` (
   `unit_price` decimal(12,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Triggers `sales_order_items`
+--
+DELIMITER $$
+CREATE TRIGGER `trg_reserve_stock_on_sale` AFTER INSERT ON `sales_order_items` FOR EACH ROW BEGIN
+    DECLARE warehouse INT;
+    SELECT warehouse_id INTO warehouse FROM sales_orders WHERE so_id = NEW.so_id;
+    UPDATE warehouse_stock SET quantity_reserved = quantity_reserved + NEW.quantity
+    WHERE warehouse_id = warehouse AND product_id = NEW.product_id AND NEW.quantity > 0
+      AND quantity_on_hand - quantity_reserved >= NEW.quantity;
+    IF ROW_COUNT() <> 1 THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Insufficient available stock.'; END IF;
+END
+$$
+DELIMITER ;
+
 -- --------------------------------------------------------
 
 --
@@ -190,11 +215,11 @@ CREATE TABLE `stock_movements` (
   `movement_id` bigint NOT NULL,
   `product_id` int NOT NULL,
   `warehouse_id` int NOT NULL,
-  `movement_type` enum('PURCHASE_RECEIPT','SALE_SHIPMENT','TRANSFER_IN','TRANSFER_OUT','ADJUSTMENT') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `movement_type` enum('PURCHASE_RECEIPT','SALE_SHIPMENT','TRANSFER_IN','TRANSFER_OUT','ADJUSTMENT') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `quantity_change` int NOT NULL,
-  `reference_type` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `reference_type` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `reference_id` int DEFAULT NULL,
-  `notes` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `notes` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `performed_by` int DEFAULT NULL,
   `movement_date` timestamp NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -213,6 +238,17 @@ INSERT INTO `stock_movements` (`movement_id`, `product_id`, `warehouse_id`, `mov
 -- Triggers `stock_movements`
 --
 DELIMITER $$
+CREATE TRIGGER `trg_prevent_negative_stock` BEFORE INSERT ON `stock_movements` FOR EACH ROW BEGIN
+    DECLARE balance INT DEFAULT 0;
+    IF NEW.quantity_change < 0 THEN
+        SELECT quantity_on_hand INTO balance FROM warehouse_stock
+            WHERE warehouse_id = NEW.warehouse_id AND product_id = NEW.product_id FOR UPDATE;
+        IF balance + NEW.quantity_change < 0 THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Insufficient stock.'; END IF;
+    END IF;
+END
+$$
+DELIMITER ;
+DELIMITER $$
 CREATE TRIGGER `trg_sync_warehouse_stock` AFTER INSERT ON `stock_movements` FOR EACH ROW BEGIN
     INSERT INTO warehouse_stock (warehouse_id, product_id, quantity_on_hand)
     VALUES (NEW.warehouse_id, NEW.product_id, NEW.quantity_change)
@@ -230,12 +266,12 @@ DELIMITER ;
 
 CREATE TABLE `suppliers` (
   `supplier_id` int NOT NULL,
-  `company_name` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `contact_person` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `email` varchar(150) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `phone` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `tax_id` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `address` text COLLATE utf8mb4_unicode_ci,
+  `company_name` varchar(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `contact_person` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `email` varchar(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `phone` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `tax_id` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `address` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `is_active` tinyint(1) NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -256,25 +292,26 @@ INSERT INTO `suppliers` (`supplier_id`, `company_name`, `contact_person`, `email
 
 CREATE TABLE `users` (
   `user_id` int NOT NULL,
-  `username` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `email` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `password_hash` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `role` enum('ADMIN','MANAGER','STAFF') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'STAFF',
+  `username` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `password_hash` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `role` enum('ADMIN','MANAGER','STAFF','CUSTOMER') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'STAFF',
   `is_active` tinyint(1) NOT NULL DEFAULT '1',
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `customer_id` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`user_id`, `username`, `email`, `password_hash`, `role`, `is_active`, `created_at`) VALUES
-(1, 'admin_user', 'admin@inventory.local', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'ADMIN', 1, '2026-11-07 18:01:50'),
-(2, 'manager_dhaka', 'manager@inventory.local', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'MANAGER', 1, '2026-11-07 18:01:50'),
-(3, 'staff_clerk', 'staff@inventory.local', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'STAFF', 1, '2026-11-07 18:01:50'),
-(4, 'admin', 'admin@gmai.com', '$2y$10$5QDiRe10CbaYvSWKkK8TPOkZYcVkha9lKsoseu39jxISiIqdctC7W', 'STAFF', 1, '2026-11-07 18:35:39'),
-(5, 'admin1', 'admin1@gmail.com', '$2y$10$sr1D4kzNWz.JFOgNOSKeD.4jKbGErPVtT2n6/SIsOMNUX9hHdRFJq', 'ADMIN', 1, '2026-11-07 18:36:58'),
-(6, 'admin2', 'admin2@gmail.com', '$2y$10$huadY7RUuXJGNwEI1AC4neG8HPhs4CJx54ehrlUovgbzgndY1HYB6', 'MANAGER', 1, '2026-11-07 18:37:25');
+INSERT INTO `users` (`user_id`, `username`, `email`, `password_hash`, `role`, `is_active`, `created_at`, `customer_id`) VALUES
+(1, 'admin_user', 'admin@inventory.local', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'ADMIN', 1, '2026-11-07 18:01:50', NULL),
+(2, 'manager_dhaka', 'manager@inventory.local', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'MANAGER', 1, '2026-11-07 18:01:50', NULL),
+(3, 'staff_clerk', 'staff@inventory.local', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'STAFF', 1, '2026-11-07 18:01:50', NULL),
+(4, 'admin', 'admin@gmai.com', '$2y$10$5QDiRe10CbaYvSWKkK8TPOkZYcVkha9lKsoseu39jxISiIqdctC7W', 'STAFF', 1, '2026-11-07 18:35:39', NULL),
+(5, 'admin1', 'admin1@gmail.com', '$2y$10$sr1D4kzNWz.JFOgNOSKeD.4jKbGErPVtT2n6/SIsOMNUX9hHdRFJq', 'ADMIN', 1, '2026-11-07 18:36:58', NULL),
+(6, 'admin2', 'admin2@gmail.com', '$2y$10$huadY7RUuXJGNwEI1AC4neG8HPhs4CJx54ehrlUovgbzgndY1HYB6', 'MANAGER', 1, '2026-11-07 18:37:25', NULL);
 
 -- --------------------------------------------------------
 
@@ -321,9 +358,9 @@ CREATE TABLE `vw_reorder_alerts` (
 
 CREATE TABLE `warehouses` (
   `warehouse_id` int NOT NULL,
-  `warehouse_code` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `warehouse_name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `location_address` text COLLATE utf8mb4_unicode_ci,
+  `warehouse_code` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `warehouse_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `location_address` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `manager_id` int DEFAULT NULL,
   `is_active` tinyint(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -347,7 +384,7 @@ CREATE TABLE `warehouse_stock` (
   `product_id` int NOT NULL,
   `quantity_on_hand` int NOT NULL DEFAULT '0',
   `quantity_reserved` int NOT NULL DEFAULT '0',
-  `aisle_bin_location` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `aisle_bin_location` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -445,7 +482,8 @@ ALTER TABLE `suppliers`
 ALTER TABLE `users`
   ADD PRIMARY KEY (`user_id`),
   ADD UNIQUE KEY `username` (`username`),
-  ADD UNIQUE KEY `email` (`email`);
+  ADD UNIQUE KEY `email` (`email`),
+  ADD UNIQUE KEY `customer_id` (`customer_id`);
 
 --
 -- Indexes for table `warehouses`
@@ -539,7 +577,18 @@ ALTER TABLE `warehouses`
 --
 DROP TABLE IF EXISTS `vw_inventory_valuation`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vw_inventory_valuation`  AS SELECT `p`.`product_id` AS `product_id`, `p`.`sku` AS `sku`, `p`.`product_name` AS `product_name`, `c`.`name` AS `category_name`, `p`.`cost_price` AS `cost_price`, `p`.`selling_price` AS `selling_price`, (`p`.`selling_price` - `p`.`cost_price`) AS `unit_margin`, coalesce(sum(`ws`.`quantity_on_hand`),0) AS `total_on_hand`, coalesce(sum(`ws`.`quantity_reserved`),0) AS `total_reserved`, coalesce(sum((`ws`.`quantity_on_hand` - `ws`.`quantity_reserved`)),0) AS `available_to_sell`, (coalesce(sum(`ws`.`quantity_on_hand`),0) * `p`.`cost_price`) AS `total_inventory_cost`, `p`.`reorder_point` AS `reorder_point` FROM ((`products` `p` left join `categories` `c` on((`p`.`category_id` = `c`.`category_id`))) left join `warehouse_stock` `ws` on((`p`.`product_id` = `ws`.`product_id`))) GROUP BY `p`.`product_id` ;
+CREATE VIEW vw_inventory_valuation AS
+SELECT p.product_id, p.sku, p.product_name, c.name AS category_name,
+       p.cost_price, p.selling_price, p.selling_price - p.cost_price AS unit_margin,
+       COALESCE(SUM(s.quantity_on_hand), 0) AS total_on_hand,
+       COALESCE(SUM(s.quantity_reserved), 0) AS total_reserved,
+       COALESCE(SUM(s.quantity_on_hand - s.quantity_reserved), 0) AS available_to_sell,
+       COALESCE(SUM(s.quantity_on_hand), 0) * p.cost_price AS total_inventory_cost,
+       p.reorder_point
+FROM products AS p
+LEFT JOIN categories AS c ON c.category_id = p.category_id
+LEFT JOIN warehouse_stock AS s ON s.product_id = p.product_id
+GROUP BY p.product_id;
 
 -- --------------------------------------------------------
 
@@ -548,7 +597,10 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 --
 DROP TABLE IF EXISTS `vw_reorder_alerts`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vw_reorder_alerts`  AS SELECT `vw_inventory_valuation`.`product_id` AS `product_id`, `vw_inventory_valuation`.`sku` AS `sku`, `vw_inventory_valuation`.`product_name` AS `product_name`, `vw_inventory_valuation`.`category_name` AS `category_name`, `vw_inventory_valuation`.`total_on_hand` AS `total_on_hand`, `vw_inventory_valuation`.`available_to_sell` AS `available_to_sell`, `vw_inventory_valuation`.`reorder_point` AS `reorder_point` FROM `vw_inventory_valuation` WHERE (`vw_inventory_valuation`.`available_to_sell` <= `vw_inventory_valuation`.`reorder_point`) ;
+CREATE VIEW vw_reorder_alerts AS
+SELECT product_id, sku, product_name, category_name, total_on_hand, available_to_sell, reorder_point
+FROM vw_inventory_valuation
+WHERE available_to_sell <= reorder_point;
 
 --
 -- Constraints for dumped tables
@@ -604,6 +656,12 @@ ALTER TABLE `stock_movements`
   ADD CONSTRAINT `stock_movements_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`),
   ADD CONSTRAINT `stock_movements_ibfk_2` FOREIGN KEY (`warehouse_id`) REFERENCES `warehouses` (`warehouse_id`),
   ADD CONSTRAINT `stock_movements_ibfk_3` FOREIGN KEY (`performed_by`) REFERENCES `users` (`user_id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `users`
+--
+ALTER TABLE `users`
+  ADD CONSTRAINT `fk_user_customer` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`customer_id`);
 
 --
 -- Constraints for table `warehouses`

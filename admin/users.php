@@ -1,26 +1,166 @@
 <?php
-require_once '../includes/auth.php';
+require_once __DIR__ . '/../includes/check_fields.php';
 $pageTitle = 'Users';
-?>
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Users | Stockroom</title>
-    <?php include '../includes/admin_css.php'; ?>
-    <link rel="stylesheet" href="../assets/css/dashboard.css">
-    <link rel="stylesheet" href="../assets/css/business-overview.css">
-</head>
-<body class="workspace-page">
-    <?php include '../includes/sidebar.php'; ?>
-    <?php include '../includes/topbar.php'; ?>
-    <main class="page-wrapper">
-        <div class="page-content">
-            <?php include '../templates/users.html'; ?>
-        </div>
-        <?php include '../includes/footer.php'; ?>
-    </main>
-    <?php include '../includes/admin_script.php'; ?>
-</body>
-</html>
+$section = 'Team';
+$error = '';
+include '../includes/edit_request.php';
+$action = '';
+$username = '';
+$email = '';
+$password = '';
+$role = 'STAFF';
+$customer_id = '';
+$is_active = '1';
+
+if (isset($_POST['action'])) {
+    $action = trim($_POST['action']);
+}
+if (isset($_POST['username'])) {
+    $username = trim($_POST['username']);
+}
+if (isset($_POST['email'])) {
+    $email = trim($_POST['email']);
+}
+if (isset($_POST['password'])) {
+    $password = trim($_POST['password']);
+}
+if (isset($_POST['role'])) {
+    $role = trim($_POST['role']);
+}
+if (isset($_POST['customer_id'])) {
+    $customer_id = trim($_POST['customer_id']);
+}
+if (isset($_POST['is_active'])) {
+    $is_active = trim($_POST['is_active']);
+}
+
+$required_role = 'ADMIN';
+require '../includes/auth.php';
+
+if ($id > 0) {
+    $records = mysqli_query($conn, "SELECT * FROM users WHERE user_id=$id");
+    $record = null;
+    if ($records) {
+        $record = mysqli_fetch_assoc($records);
+    }
+    if ($record == null) {
+        exit('Record not found.');
+    }
+    if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+        $username = $record['username'];
+        $email = $record['email'];
+        $role = $record['role'];
+        $customer_id = $record['customer_id'];
+        $is_active = $record['is_active'];
+    }
+}
+
+if ($id < 1) {
+    if ($action == 'delete') {
+        $action = '';
+    }
+}
+if ($action == 'delete') {
+    if ($id == $user_id) {
+        $error = 'You are using this account.';
+    } else {
+        $deleted = mysqli_query($conn, "DELETE FROM users WHERE user_id=$id");
+        if ($deleted == false) {
+            $error = 'This account is still in use.';
+        }
+    }
+} elseif ($action == 'save') {
+    $editor = 'edit';
+    $valid_status = false;
+    if ($is_active === '1') {
+        $valid_status = true;
+    } elseif ($is_active === '0') {
+        $valid_status = true;
+    }
+    $valid_role = false;
+    if ($role == 'ADMIN') {
+        $valid_role = true;
+    } elseif ($role == 'MANAGER') {
+        $valid_role = true;
+    } elseif ($role == 'STAFF') {
+        $valid_role = true;
+    } elseif ($role == 'CUSTOMER') {
+        $valid_role = true;
+    }
+    if ($username === '') {
+        $error = 'Complete the required fields.';
+    } elseif ($email === '') {
+        $error = 'Complete the required fields.';
+    } elseif ($valid_status == false) {
+        $error = 'Choose a valid status.';
+    } elseif ($valid_role == false) {
+        $error = 'Choose a valid role.';
+    } elseif ($role == 'CUSTOMER') {
+        if ($customer_id == '') {
+            $error = 'Select the linked customer.';
+        }
+    } elseif (isset($customer_id[0])) {
+        $error = 'Only customer accounts can link to customers.';
+    }
+    if ($error == '') {
+        if ($id == $user_id) {
+            $keep_admin_role = $role == 'ADMIN';
+            if ($keep_admin_role == false) {
+                $error = 'Keep the signed-in administrator active.';
+            } elseif ($is_active == '0') {
+                $error = 'Keep the signed-in administrator active.';
+            }
+        } elseif ($id == 0) {
+            if ($password == '') {
+                $error = 'Enter a password.';
+            }
+        }
+    }
+
+    if ($error == '') {
+        $sql_text = [
+            'username' => $username,
+            'email' => $email
+        ];
+        include __DIR__ . '/../includes/quote_fields.php';
+        $customer_id_sql = 'NULL';
+        if (isset($customer_id[0])) {
+            if (ctype_digit($customer_id) == false) {
+                exit('Choose a valid record.');
+            }
+            $customer_id_sql = $customer_id;
+        }
+        $details = "username='$sql_text[username]',
+                    email='$sql_text[email]',
+                    role='$role',
+                    customer_id=$customer_id_sql,
+                    is_active='$is_active'";
+        if (isset($password[0])) {
+            $hash = password_hash($password, PASSWORD_DEFAULT);
+            $details = $details . ",password_hash='$hash'";
+        }
+        if ($id == 0) {
+            $sql = "INSERT INTO users (username, email, role, customer_id, is_active, password_hash)
+                VALUES ('$sql_text[username]', '$sql_text[email]', '$role', $customer_id_sql, '$is_active', '$hash')";
+        } else {
+            $sql = "UPDATE users SET $details WHERE user_id=$id";
+        }
+        if (mysqli_query($conn, $sql) == false) {
+            $error = 'Could not save. Check the username, email and role.';
+        }
+    }
+} elseif ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $error = 'Choose a valid action.';
+}
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    if ($error == '') {
+        $_SESSION['notice'] = 'Record updated.';
+        header('Location: users.php');
+        exit;
+    }
+}
+
+$rows = mysqli_query($conn, 'SELECT user_id,username,email,role,is_active FROM users ORDER BY user_id DESC');
+include '../includes/workspace.php';
+include '../templates/users.php';
+include '../includes/end.php';
