@@ -13,7 +13,15 @@ if ($action == 'remove') {
     $needs_quantity = false;
 }
 if ($needs_quantity) {
-    if (ctype_digit($quantity) == false) {
+    $valid_digits = isset($quantity[0]);
+    $digit_position = 0;
+    while (isset($quantity[$digit_position])) {
+        if ($quantity[$digit_position] < '0' || $quantity[$digit_position] > '9') {
+            $valid_digits = false;
+        }
+        $digit_position = $digit_position + 1;
+    }
+    if ($valid_digits == false) {
         $error = 'Enter a positive whole quantity.';
         return;
     } elseif ($quantity < 1) {

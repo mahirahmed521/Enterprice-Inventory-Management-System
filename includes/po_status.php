@@ -35,7 +35,15 @@ if ($action == 'order') {
         return;
     }
     $outstanding = $item['quantity_ordered'] - $item['quantity_received'];
-    if (ctype_digit($quantity) == false) {
+    $valid_digits = isset($quantity[0]);
+    $digit_position = 0;
+    while (isset($quantity[$digit_position])) {
+        if ($quantity[$digit_position] < '0' || $quantity[$digit_position] > '9') {
+            $valid_digits = false;
+        }
+        $digit_position = $digit_position + 1;
+    }
+    if ($valid_digits == false) {
         $error = 'Check the outstanding quantity.';
         return;
     } elseif ($quantity < 1) {
@@ -46,7 +54,15 @@ if ($action == 'order') {
         return;
     }
     $receipt_matches = $previous_received == $item['quantity_received'];
-    if (ctype_digit($previous_received) == false) {
+    $valid_digits = isset($previous_received[0]);
+    $digit_position = 0;
+    while (isset($previous_received[$digit_position])) {
+        if ($previous_received[$digit_position] < '0' || $previous_received[$digit_position] > '9') {
+            $valid_digits = false;
+        }
+        $digit_position = $digit_position + 1;
+    }
+    if ($valid_digits == false) {
         $error = 'The received quantity has changed. Reload the order.';
         return;
     } elseif ($receipt_matches == false) {

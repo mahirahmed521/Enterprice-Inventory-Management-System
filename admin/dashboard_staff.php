@@ -17,7 +17,13 @@ if ($result == false) {
 }
 $row = mysqli_fetch_assoc($result);
 $summary['deliveries_due'] = $row['total'];
-$rows = mysqli_query($conn, "SELECT o.so_number,c.customer_name,w.warehouse_name,o.order_date FROM sales_orders o JOIN customers c USING(customer_id) JOIN warehouses w USING(warehouse_id) WHERE o.status='CONFIRMED' ORDER BY o.order_date,o.so_id LIMIT 8");
+$rows = mysqli_query($conn, "SELECT sales_orders.so_number, customers.customer_name,
+                                    warehouses.warehouse_name, sales_orders.order_date
+                             FROM sales_orders
+                             JOIN customers USING(customer_id)
+                             JOIN warehouses USING(warehouse_id)
+                             WHERE sales_orders.status='CONFIRMED'
+                             ORDER BY sales_orders.order_date, sales_orders.so_id LIMIT 8");
 if ($rows == false) {
     exit('Could not load the dashboard.');
 }

@@ -27,7 +27,12 @@ if ($result == false) {
 }
 $row = mysqli_fetch_assoc($result);
 $summary['active_accounts'] = $row['total'];
-$rows = mysqli_query($conn, "SELECT m.movement_date,p.sku,w.warehouse_name,m.movement_type,m.quantity_change FROM stock_movements m JOIN products p USING(product_id) JOIN warehouses w USING(warehouse_id) ORDER BY m.movement_id DESC LIMIT 8");
+$rows = mysqli_query($conn, "SELECT stock_movements.movement_date, products.sku, warehouses.warehouse_name,
+                                    stock_movements.movement_type, stock_movements.quantity_change
+                             FROM stock_movements
+                             JOIN products USING(product_id)
+                             JOIN warehouses USING(warehouse_id)
+                             ORDER BY stock_movements.movement_id DESC LIMIT 8");
 if ($rows == false) {
     exit('Could not load the dashboard.');
 }

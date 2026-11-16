@@ -5,7 +5,15 @@ if (isset($_SESSION['user_id']) == false) {
     if (basename($_SERVER['SCRIPT_NAME']) == 'sales_orders.php') {
         $_SESSION['open_sales'] = 1;
         if (isset($_GET['product'])) {
-            if (ctype_digit($_GET['product'])) {
+            $valid_digits = isset($_GET['product'][0]);
+            $digit_position = 0;
+            while (isset($_GET['product'][$digit_position])) {
+                if ($_GET['product'][$digit_position] < '0' || $_GET['product'][$digit_position] > '9') {
+                    $valid_digits = false;
+                }
+                $digit_position = $digit_position + 1;
+            }
+            if ($valid_digits) {
                 $_SESSION['product'] = $_GET['product'];
             }
         }

@@ -20,10 +20,26 @@ if (isset($_POST['product_id'])) {
 if (isset($_POST['bin'])) {
     $bin = trim($_POST['bin']);
 }
-if (ctype_digit($warehouse_id) == false) {
+$valid_digits = isset($warehouse_id[0]);
+$digit_position = 0;
+while (isset($warehouse_id[$digit_position])) {
+    if ($warehouse_id[$digit_position] < '0' || $warehouse_id[$digit_position] > '9') {
+        $valid_digits = false;
+    }
+    $digit_position = $digit_position + 1;
+}
+if ($valid_digits == false) {
     $warehouse_id = 0;
 }
-if (ctype_digit($product_id) == false) {
+$valid_digits = isset($product_id[0]);
+$digit_position = 0;
+while (isset($product_id[$digit_position])) {
+    if ($product_id[$digit_position] < '0' || $product_id[$digit_position] > '9') {
+        $valid_digits = false;
+    }
+    $digit_position = $digit_position + 1;
+}
+if ($valid_digits == false) {
     $product_id = 0;
 }
 require '../includes/auth.php';
@@ -71,9 +87,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         exit;
     }
 }
-$sql = "SELECT b.*,w.warehouse_name,p.product_name,b.quantity_on_hand-b.quantity_reserved AS available
-        FROM warehouse_stock b JOIN warehouses w USING(warehouse_id) JOIN products p USING(product_id)
-        ORDER BY w.warehouse_name,p.product_name";
+$sql = "SELECT warehouse_stock.*, warehouses.warehouse_name, products.product_name,
+               warehouse_stock.quantity_on_hand - warehouse_stock.quantity_reserved AS available
+        FROM warehouse_stock
+        JOIN warehouses USING(warehouse_id)
+        JOIN products USING(product_id)
+        ORDER BY warehouses.warehouse_name, products.product_name";
 $rows = mysqli_query($conn, $sql);
 include '../includes/workspace.php';
 include '../templates/warehouse_stock.php';

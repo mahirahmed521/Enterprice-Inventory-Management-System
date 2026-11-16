@@ -62,7 +62,15 @@ if ($action == 'delete') {
     }
     $parent = 0;
     if (isset($parent_id[0])) {
-        if (ctype_digit($parent_id) == false) {
+        $valid_digits = isset($parent_id[0]);
+        $digit_position = 0;
+        while (isset($parent_id[$digit_position])) {
+            if ($parent_id[$digit_position] < '0' || $parent_id[$digit_position] > '9') {
+                $valid_digits = false;
+            }
+            $digit_position = $digit_position + 1;
+        }
+        if ($valid_digits == false) {
             exit('Choose a valid parent category.');
         }
         $parent = $parent_id;
@@ -99,7 +107,15 @@ if ($action == 'delete') {
         include __DIR__ . '/../includes/quote_fields.php';
         $parent_id_sql = 'NULL';
         if (isset($parent_id[0])) {
-            if (ctype_digit($parent_id) == false) {
+            $valid_digits = isset($parent_id[0]);
+            $digit_position = 0;
+            while (isset($parent_id[$digit_position])) {
+                if ($parent_id[$digit_position] < '0' || $parent_id[$digit_position] > '9') {
+                    $valid_digits = false;
+                }
+                $digit_position = $digit_position + 1;
+            }
+            if ($valid_digits == false) {
                 exit('Choose a valid record.');
             }
             $parent_id_sql = $parent_id;

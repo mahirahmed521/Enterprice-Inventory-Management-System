@@ -125,7 +125,15 @@ if ($action == 'delete') {
         include __DIR__ . '/../includes/quote_fields.php';
         $customer_id_sql = 'NULL';
         if (isset($customer_id[0])) {
-            if (ctype_digit($customer_id) == false) {
+            $valid_digits = isset($customer_id[0]);
+            $digit_position = 0;
+            while (isset($customer_id[$digit_position])) {
+                if ($customer_id[$digit_position] < '0' || $customer_id[$digit_position] > '9') {
+                    $valid_digits = false;
+                }
+                $digit_position = $digit_position + 1;
+            }
+            if ($valid_digits == false) {
                 exit('Choose a valid record.');
             }
             $customer_id_sql = $customer_id;

@@ -578,17 +578,17 @@ ALTER TABLE `warehouses`
 DROP TABLE IF EXISTS `vw_inventory_valuation`;
 
 CREATE VIEW vw_inventory_valuation AS
-SELECT p.product_id, p.sku, p.product_name, c.name AS category_name,
-       p.cost_price, p.selling_price, p.selling_price - p.cost_price AS unit_margin,
-       COALESCE(SUM(s.quantity_on_hand), 0) AS total_on_hand,
-       COALESCE(SUM(s.quantity_reserved), 0) AS total_reserved,
-       COALESCE(SUM(s.quantity_on_hand - s.quantity_reserved), 0) AS available_to_sell,
-       COALESCE(SUM(s.quantity_on_hand), 0) * p.cost_price AS total_inventory_cost,
-       p.reorder_point
-FROM products AS p
-LEFT JOIN categories AS c ON c.category_id = p.category_id
-LEFT JOIN warehouse_stock AS s ON s.product_id = p.product_id
-GROUP BY p.product_id;
+SELECT products.product_id, products.sku, products.product_name, categories.name AS category_name,
+       products.cost_price, products.selling_price, products.selling_price - products.cost_price AS unit_margin,
+       COALESCE(SUM(warehouse_stock.quantity_on_hand), 0) AS total_on_hand,
+       COALESCE(SUM(warehouse_stock.quantity_reserved), 0) AS total_reserved,
+       COALESCE(SUM(warehouse_stock.quantity_on_hand - warehouse_stock.quantity_reserved), 0) AS available_to_sell,
+       COALESCE(SUM(warehouse_stock.quantity_on_hand), 0) * products.cost_price AS total_inventory_cost,
+       products.reorder_point
+FROM products
+LEFT JOIN categories ON categories.category_id = products.category_id
+LEFT JOIN warehouse_stock ON warehouse_stock.product_id = products.product_id
+GROUP BY products.product_id;
 
 -- --------------------------------------------------------
 

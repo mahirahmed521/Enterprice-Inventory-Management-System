@@ -179,9 +179,26 @@ if ($action == 'delete') {
         $error = 'Cost price must be zero or positive.';
     } elseif ($tax_rate < 0) {
         $error = 'Tax rate must be zero or positive.';
-    } elseif (ctype_digit($reorder_point) == false) {
+    }
+    $valid_reorder_point = isset($reorder_point[0]);
+    $digit_position = 0;
+    while (isset($reorder_point[$digit_position])) {
+        if ($reorder_point[$digit_position] < '0' || $reorder_point[$digit_position] > '9') {
+            $valid_reorder_point = false;
+        }
+        $digit_position = $digit_position + 1;
+    }
+    $valid_reorder_quantity = isset($reorder_quantity[0]);
+    $digit_position = 0;
+    while (isset($reorder_quantity[$digit_position])) {
+        if ($reorder_quantity[$digit_position] < '0' || $reorder_quantity[$digit_position] > '9') {
+            $valid_reorder_quantity = false;
+        }
+        $digit_position = $digit_position + 1;
+    }
+    if ($error == '' && $valid_reorder_point == false) {
         $error = 'Enter a whole number for the reorder point.';
-    } elseif (ctype_digit($reorder_quantity) == false) {
+    } elseif ($error == '' && $valid_reorder_quantity == false) {
         $error = 'Enter a whole number for the reorder quantity.';
     }
 
@@ -195,14 +212,30 @@ if ($action == 'delete') {
         include __DIR__ . '/../includes/quote_fields.php';
         $category_id_sql = 'NULL';
         if (isset($category_id[0])) {
-            if (ctype_digit($category_id) == false) {
+            $valid_digits = isset($category_id[0]);
+            $digit_position = 0;
+            while (isset($category_id[$digit_position])) {
+                if ($category_id[$digit_position] < '0' || $category_id[$digit_position] > '9') {
+                    $valid_digits = false;
+                }
+                $digit_position = $digit_position + 1;
+            }
+            if ($valid_digits == false) {
                 exit('Choose a valid record.');
             }
             $category_id_sql = $category_id;
         }
         $preferred_supplier_id_sql = 'NULL';
         if (isset($preferred_supplier_id[0])) {
-            if (ctype_digit($preferred_supplier_id) == false) {
+            $valid_digits = isset($preferred_supplier_id[0]);
+            $digit_position = 0;
+            while (isset($preferred_supplier_id[$digit_position])) {
+                if ($preferred_supplier_id[$digit_position] < '0' || $preferred_supplier_id[$digit_position] > '9') {
+                    $valid_digits = false;
+                }
+                $digit_position = $digit_position + 1;
+            }
+            if ($valid_digits == false) {
                 exit('Choose a valid record.');
             }
             $preferred_supplier_id_sql = $preferred_supplier_id;
@@ -245,24 +278,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 
-$columns = 'p.product_id,p.product_name,p.sku,p.selling_price,p.unit_of_measure,p.is_active,p.reorder_point,
-            v.category_name AS category,v.available_to_sell';
+$columns = 'products.product_id,products.product_name,products.sku,products.selling_price,products.unit_of_measure,
+            products.is_active,products.reorder_point,vw_inventory_valuation.category_name AS category,
+            vw_inventory_valuation.available_to_sell';
 if ($can_edit) {
-    $columns = $columns . ',p.cost_price';
+    $columns = $columns . ',products.cost_price';
 }
 $sql_text = [
     'search' => $search
 ];
 include __DIR__ . '/../includes/quote_fields.php';
 $term = $sql_text['search'];
-$sql = "SELECT $columns FROM products p JOIN vw_inventory_valuation v USING(product_id)
-        WHERE (p.product_name LIKE '%$term%' OR p.sku LIKE '%$term%')";
+$sql = "SELECT $columns FROM products
+        JOIN vw_inventory_valuation USING(product_id)
+        WHERE (products.product_name LIKE '%$term%' OR products.sku LIKE '%$term%')";
 if ($status === '0') {
-    $sql = $sql . " AND p.is_active=0";
+    $sql = $sql . " AND products.is_active=0";
 } elseif ($status === '1') {
-    $sql = $sql . " AND p.is_active=1";
+    $sql = $sql . " AND products.is_active=1";
 }
-$products = mysqli_query($conn, $sql . ' ORDER BY p.product_name,p.product_id');
+$products = mysqli_query($conn, $sql . ' ORDER BY products.product_name,products.product_id');
 if ($products == false) {
     exit('Could not load the catalog.');
 }

@@ -6,17 +6,20 @@ if (isset($_GET['q'])) {
     $search = trim($_GET['q']);
 }
 require 'config/db.php';
-$sql = "SELECT p.product_id,p.sku,p.product_name,p.selling_price,p.unit_of_measure,v.available_to_sell
-        FROM products p JOIN vw_inventory_valuation v USING(product_id) WHERE p.is_active=1";
+$sql = "SELECT products.product_id, products.sku, products.product_name, products.selling_price,
+               products.unit_of_measure, vw_inventory_valuation.available_to_sell
+        FROM products
+        JOIN vw_inventory_valuation USING(product_id)
+        WHERE products.is_active=1";
 if (isset($search[0])) {
     $sql_text = [
         'search' => $search
     ];
     include __DIR__ . '/includes/quote_fields.php';
     $term = $sql_text['search'];
-    $sql = $sql . " AND (p.sku LIKE '%$term%' OR p.product_name LIKE '%$term%')";
+    $sql = $sql . " AND (products.sku LIKE '%$term%' OR products.product_name LIKE '%$term%')";
 }
-$rows = mysqli_query($conn, $sql . ' ORDER BY p.product_name,p.sku');
+$rows = mysqli_query($conn, $sql . ' ORDER BY products.product_name, products.sku');
 if ($rows == false) {
     exit('Could not load the catalog.');
 }
