@@ -38,7 +38,10 @@ if ($action == 'order') {
     $valid_digits = isset($quantity[0]);
     $digit_position = 0;
     while (isset($quantity[$digit_position])) {
-        if ($quantity[$digit_position] < '0' || $quantity[$digit_position] > '9') {
+        if ($quantity[$digit_position] < '0') {
+            $valid_digits = false;
+        }
+        if ($quantity[$digit_position] > '9') {
             $valid_digits = false;
         }
         $digit_position = $digit_position + 1;
@@ -57,7 +60,10 @@ if ($action == 'order') {
     $valid_digits = isset($previous_received[0]);
     $digit_position = 0;
     while (isset($previous_received[$digit_position])) {
-        if ($previous_received[$digit_position] < '0' || $previous_received[$digit_position] > '9') {
+        if ($previous_received[$digit_position] < '0') {
+            $valid_digits = false;
+        }
+        if ($previous_received[$digit_position] > '9') {
             $valid_digits = false;
         }
         $digit_position = $digit_position + 1;

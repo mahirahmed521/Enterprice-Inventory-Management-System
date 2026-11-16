@@ -16,7 +16,10 @@ if ($needs_quantity) {
     $valid_digits = isset($quantity[0]);
     $digit_position = 0;
     while (isset($quantity[$digit_position])) {
-        if ($quantity[$digit_position] < '0' || $quantity[$digit_position] > '9') {
+        if ($quantity[$digit_position] < '0') {
+            $valid_digits = false;
+        }
+        if ($quantity[$digit_position] > '9') {
             $valid_digits = false;
         }
         $digit_position = $digit_position + 1;

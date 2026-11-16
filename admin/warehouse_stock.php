@@ -23,7 +23,10 @@ if (isset($_POST['bin'])) {
 $valid_digits = isset($warehouse_id[0]);
 $digit_position = 0;
 while (isset($warehouse_id[$digit_position])) {
-    if ($warehouse_id[$digit_position] < '0' || $warehouse_id[$digit_position] > '9') {
+    if ($warehouse_id[$digit_position] < '0') {
+        $valid_digits = false;
+    }
+    if ($warehouse_id[$digit_position] > '9') {
         $valid_digits = false;
     }
     $digit_position = $digit_position + 1;
@@ -34,7 +37,10 @@ if ($valid_digits == false) {
 $valid_digits = isset($product_id[0]);
 $digit_position = 0;
 while (isset($product_id[$digit_position])) {
-    if ($product_id[$digit_position] < '0' || $product_id[$digit_position] > '9') {
+    if ($product_id[$digit_position] < '0') {
+        $valid_digits = false;
+    }
+    if ($product_id[$digit_position] > '9') {
         $valid_digits = false;
     }
     $digit_position = $digit_position + 1;

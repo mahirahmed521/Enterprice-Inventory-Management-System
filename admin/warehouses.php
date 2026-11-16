@@ -123,7 +123,10 @@ if ($action == 'delete') {
             $valid_digits = isset($manager_id[0]);
             $digit_position = 0;
             while (isset($manager_id[$digit_position])) {
-                if ($manager_id[$digit_position] < '0' || $manager_id[$digit_position] > '9') {
+                if ($manager_id[$digit_position] < '0') {
+                    $valid_digits = false;
+                }
+                if ($manager_id[$digit_position] > '9') {
                     $valid_digits = false;
                 }
                 $digit_position = $digit_position + 1;

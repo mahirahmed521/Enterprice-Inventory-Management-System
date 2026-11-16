@@ -17,12 +17,7 @@ if ($result == false) {
 }
 $row = mysqli_fetch_assoc($result);
 $summary['pending_sales'] = $row['total'];
-$rows = mysqli_query($conn, "SELECT vw_reorder_alerts.sku, vw_reorder_alerts.product_name,
-                                    vw_reorder_alerts.available_to_sell, vw_reorder_alerts.reorder_point
-                             FROM vw_reorder_alerts
-                             JOIN products USING(product_id)
-                             WHERE products.is_active=1
-                             ORDER BY vw_reorder_alerts.available_to_sell LIMIT 8");
+$rows = mysqli_query($conn, "SELECT v.sku,v.product_name,v.available_to_sell,v.reorder_point FROM vw_reorder_alerts v JOIN products p USING(product_id) WHERE p.is_active=1 ORDER BY v.available_to_sell LIMIT 8");
 if ($rows == false) {
     exit('Could not load the dashboard.');
 }

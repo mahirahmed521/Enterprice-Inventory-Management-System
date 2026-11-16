@@ -128,7 +128,10 @@ if ($action == 'delete') {
             $valid_digits = isset($customer_id[0]);
             $digit_position = 0;
             while (isset($customer_id[$digit_position])) {
-                if ($customer_id[$digit_position] < '0' || $customer_id[$digit_position] > '9') {
+                if ($customer_id[$digit_position] < '0') {
+                    $valid_digits = false;
+                }
+                if ($customer_id[$digit_position] > '9') {
                     $valid_digits = false;
                 }
                 $digit_position = $digit_position + 1;

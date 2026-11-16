@@ -65,7 +65,10 @@ if ($action == 'delete') {
         $valid_digits = isset($parent_id[0]);
         $digit_position = 0;
         while (isset($parent_id[$digit_position])) {
-            if ($parent_id[$digit_position] < '0' || $parent_id[$digit_position] > '9') {
+            if ($parent_id[$digit_position] < '0') {
+                $valid_digits = false;
+            }
+            if ($parent_id[$digit_position] > '9') {
                 $valid_digits = false;
             }
             $digit_position = $digit_position + 1;
@@ -110,7 +113,10 @@ if ($action == 'delete') {
             $valid_digits = isset($parent_id[0]);
             $digit_position = 0;
             while (isset($parent_id[$digit_position])) {
-                if ($parent_id[$digit_position] < '0' || $parent_id[$digit_position] > '9') {
+                if ($parent_id[$digit_position] < '0') {
+                    $valid_digits = false;
+                }
+                if ($parent_id[$digit_position] > '9') {
                     $valid_digits = false;
                 }
                 $digit_position = $digit_position + 1;

@@ -9,7 +9,10 @@ if (isset($_GET['id'])) {
     $valid_digits = isset($_GET['id'][0]);
     $digit_position = 0;
     while (isset($_GET['id'][$digit_position])) {
-        if ($_GET['id'][$digit_position] < '0' || $_GET['id'][$digit_position] > '9') {
+        if ($_GET['id'][$digit_position] < '0') {
+            $valid_digits = false;
+        }
+        if ($_GET['id'][$digit_position] > '9') {
             $valid_digits = false;
         }
         $digit_position = $digit_position + 1;
@@ -23,7 +26,10 @@ if (isset($_GET['product'])) {
     $valid_digits = isset($_GET['product'][0]);
     $digit_position = 0;
     while (isset($_GET['product'][$digit_position])) {
-        if ($_GET['product'][$digit_position] < '0' || $_GET['product'][$digit_position] > '9') {
+        if ($_GET['product'][$digit_position] < '0') {
+            $valid_digits = false;
+        }
+        if ($_GET['product'][$digit_position] > '9') {
             $valid_digits = false;
         }
         $digit_position = $digit_position + 1;
@@ -60,7 +66,10 @@ if (isset($_POST['quantity'])) {
 $valid_digits = isset($warehouse_id[0]);
 $digit_position = 0;
 while (isset($warehouse_id[$digit_position])) {
-    if ($warehouse_id[$digit_position] < '0' || $warehouse_id[$digit_position] > '9') {
+    if ($warehouse_id[$digit_position] < '0') {
+        $valid_digits = false;
+    }
+    if ($warehouse_id[$digit_position] > '9') {
         $valid_digits = false;
     }
     $digit_position = $digit_position + 1;
@@ -71,7 +80,10 @@ if ($valid_digits == false) {
 $valid_digits = isset($party_id[0]);
 $digit_position = 0;
 while (isset($party_id[$digit_position])) {
-    if ($party_id[$digit_position] < '0' || $party_id[$digit_position] > '9') {
+    if ($party_id[$digit_position] < '0') {
+        $valid_digits = false;
+    }
+    if ($party_id[$digit_position] > '9') {
         $valid_digits = false;
     }
     $digit_position = $digit_position + 1;
@@ -82,7 +94,10 @@ if ($valid_digits == false) {
 $valid_digits = isset($product_id[0]);
 $digit_position = 0;
 while (isset($product_id[$digit_position])) {
-    if ($product_id[$digit_position] < '0' || $product_id[$digit_position] > '9') {
+    if ($product_id[$digit_position] < '0') {
+        $valid_digits = false;
+    }
+    if ($product_id[$digit_position] > '9') {
         $valid_digits = false;
     }
     $digit_position = $digit_position + 1;
@@ -93,7 +108,10 @@ if ($valid_digits == false) {
 $valid_digits = isset($line_id[0]);
 $digit_position = 0;
 while (isset($line_id[$digit_position])) {
-    if ($line_id[$digit_position] < '0' || $line_id[$digit_position] > '9') {
+    if ($line_id[$digit_position] < '0') {
+        $valid_digits = false;
+    }
+    if ($line_id[$digit_position] > '9') {
         $valid_digits = false;
     }
     $digit_position = $digit_position + 1;
@@ -117,10 +135,9 @@ if ($account['role'] == 'CUSTOMER') {
 
 $order = null;
 $status = '';
-$list_sql = "SELECT sales_orders.*, customers.customer_name AS party, warehouses.warehouse_name
-             FROM sales_orders
-             JOIN customers ON customers.customer_id=sales_orders.customer_id
-             JOIN warehouses ON warehouses.warehouse_id=sales_orders.warehouse_id";
+$list_sql = "SELECT o.*, partner.customer_name AS party, w.warehouse_name
+             FROM sales_orders o JOIN customers partner ON partner.customer_id=o.customer_id
+             JOIN warehouses w ON w.warehouse_id=o.warehouse_id";
 if ($id < 0) {
     exit('Order not found.');
 }
@@ -128,9 +145,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     mysqli_query($conn, 'START TRANSACTION');
 }
 if ($id > 0) {
-    $sql = "$list_sql WHERE sales_orders.so_id=$id";
+    $sql = "$list_sql WHERE o.so_id=$id";
     if ($is_customer) {
-        $sql = $sql . " AND sales_orders.customer_id=$party_id";
+        $sql = $sql . " AND o.customer_id=$party_id";
     }
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $sql = $sql . ' FOR UPDATE';
@@ -230,15 +247,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 
 if ($is_customer) {
-    $list_sql = $list_sql . " WHERE sales_orders.customer_id=$party_id";
+    $list_sql = $list_sql . " WHERE o.customer_id=$party_id";
 }
-$rows = mysqli_query($conn, "$list_sql ORDER BY sales_orders.so_id DESC");
+$rows = mysqli_query($conn, "$list_sql ORDER BY o.so_id DESC");
 if ($order) {
-    $lines = mysqli_query($conn, "SELECT sales_order_items.*, products.product_name
-        FROM sales_order_items
-        JOIN products ON sales_order_items.product_id=products.product_id
-        WHERE sales_order_items.so_id=$id
-        ORDER BY sales_order_items.so_item_id");
+    $lines = mysqli_query($conn, "SELECT i.*,p.product_name FROM sales_order_items i
+        JOIN products p ON i.product_id=p.product_id WHERE i.so_id=$id ORDER BY i.so_item_id");
 }
 include '../includes/workspace.php';
 include '../templates/sales_orders.php';

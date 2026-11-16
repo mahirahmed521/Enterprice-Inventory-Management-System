@@ -31,7 +31,10 @@ if (isset($_POST['notes'])) {
 $valid_digits = isset($warehouse_id[0]);
 $digit_position = 0;
 while (isset($warehouse_id[$digit_position])) {
-    if ($warehouse_id[$digit_position] < '0' || $warehouse_id[$digit_position] > '9') {
+    if ($warehouse_id[$digit_position] < '0') {
+        $valid_digits = false;
+    }
+    if ($warehouse_id[$digit_position] > '9') {
         $valid_digits = false;
     }
     $digit_position = $digit_position + 1;
@@ -42,7 +45,10 @@ if ($valid_digits == false) {
 $valid_digits = isset($product_id[0]);
 $digit_position = 0;
 while (isset($product_id[$digit_position])) {
-    if ($product_id[$digit_position] < '0' || $product_id[$digit_position] > '9') {
+    if ($product_id[$digit_position] < '0') {
+        $valid_digits = false;
+    }
+    if ($product_id[$digit_position] > '9') {
         $valid_digits = false;
     }
     $digit_position = $digit_position + 1;
@@ -53,7 +59,10 @@ if ($valid_digits == false) {
 $valid_digits = isset($destination[0]);
 $digit_position = 0;
 while (isset($destination[$digit_position])) {
-    if ($destination[$digit_position] < '0' || $destination[$digit_position] > '9') {
+    if ($destination[$digit_position] < '0') {
+        $valid_digits = false;
+    }
+    if ($destination[$digit_position] > '9') {
         $valid_digits = false;
     }
     $digit_position = $digit_position + 1;
@@ -82,7 +91,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $valid_digits = isset($quantity[0]);
     $digit_position = 0;
     while (isset($quantity[$digit_position])) {
-        if ($quantity[$digit_position] < '0' || $quantity[$digit_position] > '9') {
+        if ($quantity[$digit_position] < '0') {
+            $valid_digits = false;
+        }
+        if ($quantity[$digit_position] > '9') {
             $valid_digits = false;
         }
         $digit_position = $digit_position + 1;
@@ -113,12 +125,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     }
 }
-$sql = "SELECT stock_movements.*, warehouses.warehouse_name, products.sku, users.username
-        FROM stock_movements
-        JOIN warehouses USING(warehouse_id)
-        JOIN products USING(product_id)
-        LEFT JOIN users ON users.user_id=stock_movements.performed_by
-        ORDER BY stock_movements.movement_id DESC";
+$sql = "SELECT m.*,w.warehouse_name,p.sku,u.username FROM stock_movements m
+        JOIN warehouses w USING(warehouse_id) JOIN products p USING(product_id)
+        LEFT JOIN users u ON u.user_id=m.performed_by ORDER BY m.movement_id DESC";
 $rows = mysqli_query($conn, $sql);
 include '../includes/workspace.php';
 include '../templates/stock_movements.php';

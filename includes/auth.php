@@ -8,7 +8,10 @@ if (isset($_SESSION['user_id']) == false) {
             $valid_digits = isset($_GET['product'][0]);
             $digit_position = 0;
             while (isset($_GET['product'][$digit_position])) {
-                if ($_GET['product'][$digit_position] < '0' || $_GET['product'][$digit_position] > '9') {
+                if ($_GET['product'][$digit_position] < '0') {
+                    $valid_digits = false;
+                }
+                if ($_GET['product'][$digit_position] > '9') {
                     $valid_digits = false;
                 }
                 $digit_position = $digit_position + 1;

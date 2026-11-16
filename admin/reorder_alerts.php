@@ -6,13 +6,7 @@ if ($supervisor == false) {
     exit('Access denied.');
 }
 
-$sql = "SELECT vw_reorder_alerts.sku, vw_reorder_alerts.product_name, vw_reorder_alerts.available_to_sell,
-               vw_reorder_alerts.reorder_point, products.reorder_quantity, suppliers.company_name
-        FROM vw_reorder_alerts
-        JOIN products USING(product_id)
-        LEFT JOIN suppliers ON suppliers.supplier_id=products.preferred_supplier_id
-        WHERE products.is_active=1
-        ORDER BY vw_reorder_alerts.available_to_sell, vw_reorder_alerts.sku";
+$sql = "SELECT a.sku,a.product_name,a.available_to_sell,a.reorder_point,p.reorder_quantity,s.company_name FROM vw_reorder_alerts a JOIN products p USING(product_id) LEFT JOIN suppliers s ON s.supplier_id=p.preferred_supplier_id WHERE p.is_active=1 ORDER BY a.available_to_sell,a.sku";
 $rows = mysqli_query($conn, $sql);
 if ($rows == false) {
     exit('Could not load this report.');
