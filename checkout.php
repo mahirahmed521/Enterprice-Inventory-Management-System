@@ -85,11 +85,7 @@ while ($i < $key_total) {
         $line_qtys[] = $qty;
         $line_names[] = $row['product_name'];
         $line_prices[] = (float) $row['selling_price'];
-        $p_img = $row['product_image'];
-        if ($p_img == '') {
-            $p_img = 'uploads/products/default.png';
-        }
-        $line_images[] = $p_img;
+        $line_images[] = product_image_url($row['product_image']);
         $line_total = $qty * (float) $row['selling_price'];
         $subtotal = $subtotal + $line_total;
         $estimated_tax = $estimated_tax + ($line_total * (float) $row['tax_rate'] / 100);
@@ -286,7 +282,7 @@ $pay_icons = array('bx-money', 'bx-wallet', 'bx-wallet', 'bx-credit-card', 'bx-b
                     <h2 class="h5">Delivery Package</h2>
                     <?php $k = 0; while ($k < $line_count) { ?>
                         <div class="d-flex align-items-center gap-3 py-2 border-bottom">
-                            <img class="cart-thumb" src="<?php echo htmlspecialchars($line_images[$k]); ?>" onerror="this.src='uploads/products/default.png'" alt="">
+                            <img class="cart-thumb" src="<?php echo htmlspecialchars($line_images[$k]); ?>" onerror="this.onerror=null;this.src='pictures/default.png'" alt="">
                             <div class="flex-grow-1"><strong><?php echo htmlspecialchars($line_names[$k]); ?></strong><div class="small text-muted">Quantity: <?php echo $line_qtys[$k]; ?></div></div>
                             <strong class="price"><?php echo $currency . number_format($line_qtys[$k] * $line_prices[$k], 2); ?></strong>
                         </div>

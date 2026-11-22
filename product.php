@@ -37,6 +37,19 @@ if ($product == null) {
     exit;
 }
 
+// Remember this product for the "Recently viewed" strip (newest first, 8 at most)
+$recent_keep = array($id);
+if (isset($_SESSION['recent_products'])) {
+    $r = 0;
+    while (isset($_SESSION['recent_products'][$r]) && count($recent_keep) < 8) {
+        if ((int) $_SESSION['recent_products'][$r] != $id) {
+            $recent_keep[] = (int) $_SESSION['recent_products'][$r];
+        }
+        $r = $r + 1;
+    }
+}
+$_SESSION['recent_products'] = $recent_keep;
+
 // Who is signed in
 include __DIR__ . '/includes/current_customer.php';
 $already_reviewed = false;
@@ -75,10 +88,7 @@ $rating_row = mysqli_fetch_assoc($rating_result);
 $reviews = mysqli_query($conn, "SELECT r.rating, r.comment, r.created_at, c.customer_name FROM product_reviews r JOIN customers c ON c.customer_id=r.customer_id WHERE r.product_id=$id ORDER BY r.created_at DESC");
 $warehouses = mysqli_query($conn, 'SELECT warehouse_name, location_address FROM warehouses WHERE is_active=1 ORDER BY warehouse_name');
 
-$p_img = $product['product_image'];
-if ($p_img == '') {
-    $p_img = 'uploads/products/default.png';
-}
+$p_img = product_image_url($product['product_image']);
 $stock_status = $product['stock_status'];
 include __DIR__ . '/includes/stock_badge.php';
 $available = (int) $product['available_to_sell'];
@@ -87,6 +97,30 @@ if ($available <= 0) {
     $buy_disabled = 'disabled';
 }
 $rounded_rating = (int) round((float) $rating_row['average_rating']);
+$is_wished = false;
+if (isset($wish_ids)) {
+    if (in_array($id, $wish_ids)) {
+        $is_wished = true;
+    }
+}
+
+// Related products: same category first, then same brand
+$rating_sql = '(SELECT AVG(r.rating) FROM product_reviews r WHERE r.product_id=v.product_id) AS avg_rating, (SELECT COUNT(*) FROM product_reviews r2 WHERE r2.product_id=v.product_id) AS review_count';
+$related_category = (int) $product['category_id'];
+$related_brand = '';
+if ($product['brand'] != '') {
+    $sql_text = array('brand' => (string) $product['brand']);
+    include __DIR__ . '/includes/quote_fields.php';
+    $related_brand = $sql_text['brand'];
+}
+$related_match = 'v.category_id=-1';
+if ($related_category > 0) {
+    $related_match = "v.category_id=$related_category";
+}
+if ($related_brand != '') {
+    $related_match = $related_match . " OR v.brand='$related_brand'";
+}
+$related = mysqli_query($conn, "SELECT v.*, $rating_sql FROM vw_storefront_products v WHERE v.product_id<>$id AND ($related_match) ORDER BY (v.category_id=$related_category) DESC, v.available_to_sell > 0 DESC, v.product_id DESC LIMIT 6");
 $spec_lines = array();
 if ($product['specifications'] != '') {
     $spec_lines = explode(',', $product['specifications']);
@@ -104,14 +138,14 @@ $spec_total = count($spec_lines);
 <main class="store-main">
     <div class="container">
         <nav aria-label="breadcrumb"><ol class="breadcrumb small">
-            <li class="breadcrumb-item"><a href="index.php">Home</a></li>
+            <li class="breadcrumb-item"><a href="home.php">Home</a></li>
             <li class="breadcrumb-item"><a href="shop.php?category_id=<?php echo $product['category_id']; ?>"><?php echo htmlspecialchars((string) $product['category_name']); ?></a></li>
             <li class="breadcrumb-item active" aria-current="page"><?php echo htmlspecialchars($product['product_name']); ?></li>
         </ol></nav>
 
         <div class="card mb-2"><div class="card-body"><div class="row g-3">
             <div class="col-lg-4">
-                <img class="detail-photo" src="<?php echo htmlspecialchars($p_img); ?>" onerror="this.src='uploads/products/default.png'" alt="<?php echo htmlspecialchars($product['product_name']); ?>">
+                <img class="detail-photo" src="<?php echo htmlspecialchars($p_img); ?>" onerror="this.onerror=null;this.src='pictures/default.png'" alt="<?php echo htmlspecialchars($product['product_name']); ?>">
                 <div class="mt-2"><span class="badge <?php echo $stock_class; ?>"><?php echo $stock_label; ?></span></div>
             </div>
 
@@ -143,6 +177,10 @@ $spec_total = count($spec_lines);
                         <button class="btn btn-cyan btn-lg flex-fill" name="action" value="buy_now" <?php echo $buy_disabled; ?>>Buy Now</button>
                         <button class="btn btn-orange btn-lg flex-fill" name="action" value="add_cart" <?php echo $buy_disabled; ?>>Add to Cart</button>
                     </div>
+                </form>
+                <form method="post" class="mt-2">
+                    <input type="hidden" name="action" value="toggle_wish">
+                    <button class="btn btn-outline-secondary w-100" type="submit"><i class="bx <?php if ($is_wished) { echo 'bxs-heart text-orange'; } else { echo 'bx-heart'; } ?>"></i> <?php if ($is_wished) { echo 'Saved to Wishlist (click to remove)'; } else { echo 'Add to Wishlist'; } ?></button>
                 </form>
             </div>
 
@@ -227,6 +265,21 @@ $spec_total = count($spec_lines);
                 </div></div>
             </section>
         </div>
+
+        <?php if ($related && mysqli_num_rows($related) > 0) { ?>
+            <?php $page_product = $product; ?>
+            <h2 class="product-strip-title">You May Also Like</h2>
+            <section class="mb-2">
+                <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 row-cols-xl-6 g-2">
+                    <?php while ($product = mysqli_fetch_assoc($related)) { ?>
+                        <div class="col"><?php include __DIR__ . '/includes/product_card.php'; ?></div>
+                    <?php } ?>
+                </div>
+            </section>
+            <?php $product = $page_product; ?>
+        <?php } ?>
+
+        <?php $recent_exclude = $id; include __DIR__ . '/includes/recent_strip.php'; ?>
     </div>
 </main>
 <?php include __DIR__ . '/includes/store_footer.php'; ?>

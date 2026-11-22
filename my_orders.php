@@ -51,6 +51,55 @@ if ($customer_id > 0 && $action == 'cancel') {
     }
 }
 
+// Buy again: put the items of an earlier order back into the cart (only what is in stock now)
+if ($customer_id > 0 && $action == 'reorder') {
+    $own_order = mysqli_query($conn, "SELECT so_id FROM sales_orders WHERE so_id=$order_id AND customer_id=$customer_id");
+    $own_order_row = null;
+    if ($own_order) {
+        $own_order_row = mysqli_fetch_assoc($own_order);
+    }
+    if ($own_order_row == null) {
+        $cancel_error = 'We could not find that order.';
+    } else {
+        $again_items = mysqli_query($conn, "SELECT i.product_id, SUM(i.quantity) AS wanted, v.available_to_sell FROM sales_order_items i LEFT JOIN vw_storefront_products v ON v.product_id=i.product_id WHERE i.so_id=$order_id GROUP BY i.product_id, v.available_to_sell");
+        $again_added = 0;
+        $again_skipped = 0;
+        if (isset($_SESSION['cart']) == false) {
+            $_SESSION['cart'] = array();
+        }
+        if ($again_items) {
+            while ($again = mysqli_fetch_assoc($again_items)) {
+                $again_id = (int) $again['product_id'];
+                $again_available = (int) $again['available_to_sell'];
+                $again_wanted = (int) $again['wanted'];
+                if ($again_available <= 0) {
+                    $again_skipped = $again_skipped + 1;
+                } else {
+                    $again_in_cart = 0;
+                    if (isset($_SESSION['cart'][$again_id])) {
+                        $again_in_cart = (int) $_SESSION['cart'][$again_id];
+                    }
+                    $again_new = $again_in_cart + $again_wanted;
+                    if ($again_new > $again_available) {
+                        $again_new = $again_available;
+                    }
+                    $_SESSION['cart'][$again_id] = $again_new;
+                    $again_added = $again_added + 1;
+                }
+            }
+        }
+        if ($again_added > 0) {
+            $_SESSION['cart_notice'] = $again_added . ' item(s) from that order were added to your cart.';
+            if ($again_skipped > 0) {
+                $_SESSION['cart_error'] = $again_skipped . ' item(s) are out of stock or no longer sold, so they were left out.';
+            }
+            header('Location: cart.php');
+            exit;
+        }
+        $cancel_error = 'None of the items from that order are available right now.';
+    }
+}
+
 $orders = null;
 $order_total = 0;
 if ($customer_id > 0) {
@@ -136,13 +185,10 @@ if ($customer_id > 0) {
 
                 <?php while ($item = mysqli_fetch_assoc($items)) { ?>
                     <?php
-                    $p_img = $item['product_image'];
-                    if ($p_img == '') {
-                        $p_img = 'uploads/products/default.png';
-                    }
+                    $p_img = product_image_url($item['product_image']);
                     ?>
                     <div class="d-flex align-items-center gap-3 py-2 border-top">
-                        <img class="cart-thumb" src="<?php echo htmlspecialchars($p_img); ?>" onerror="this.src='uploads/products/default.png'" alt="">
+                        <img class="cart-thumb" src="<?php echo htmlspecialchars($p_img); ?>" onerror="this.onerror=null;this.src='pictures/default.png'" alt="">
                         <div class="flex-grow-1">
                             <a class="fw-semibold text-decoration-none" href="product.php?id=<?php echo $item['product_id']; ?>"><?php echo htmlspecialchars($item['product_name']); ?></a>
                             <div class="small text-muted">Quantity <?php echo $item['quantity']; ?> &middot; <?php echo $currency . number_format((float) $item['unit_price'], 2); ?> each</div>
@@ -161,6 +207,13 @@ if ($customer_id > 0) {
                                 <input type="hidden" name="action" value="cancel">
                                 <input type="hidden" name="order_id" value="<?php echo $this_order; ?>">
                                 <button class="btn btn-outline-danger" type="submit">Cancel Order</button>
+                            </form>
+                        <?php } ?>
+                        <?php if ($status == 'SHIPPED' || $status == 'CANCELLED') { ?>
+                            <form method="post">
+                                <input type="hidden" name="action" value="reorder">
+                                <input type="hidden" name="order_id" value="<?php echo $this_order; ?>">
+                                <button class="btn btn-outline-orange" type="submit">Buy Again</button>
                             </form>
                         <?php } ?>
                         <a class="btn btn-orange" href="order_invoice.php?so_id=<?php echo $this_order; ?>">Print Invoice</a>

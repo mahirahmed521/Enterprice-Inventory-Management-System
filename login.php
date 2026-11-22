@@ -48,12 +48,12 @@ if ($posted) {
         $_SESSION['username'] = $user['username'];
         unset($_SESSION['redirect_after_login']);
         if ($user['role'] == 'CUSTOMER') {
-            if ($go_to == 'checkout.php' || $go_to == 'my_orders.php') {
+            if ($go_to == 'checkout.php' || $go_to == 'my_orders.php' || $go_to == 'wishlist.php' || $go_to == 'my_account.php' || $go_to == 'my_profile.php') {
                 header('Location: ' . $go_to);
             } elseif (count($_SESSION['cart']) > 0) {
                 header('Location: checkout.php');
             } else {
-                header('Location: my_orders.php');
+                header('Location: home.php');
             }
         } else {
             header('Location: admin/dashboard.php');
@@ -89,7 +89,6 @@ if ($posted) {
                         <button class="btn btn-orange w-100 btn-lg" type="submit">Sign In</button>
                     </form>
                     <p class="text-center mt-3 mb-0">New here? <a href="register.php">Create a customer account</a></p>
-                    <p class="text-center small text-muted mt-2 mb-0">Team members sign in here too and go to the admin dashboard.</p>
                 </div></div>
             </div>
         </div>

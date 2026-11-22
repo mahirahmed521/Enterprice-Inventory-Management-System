@@ -105,7 +105,7 @@ $brands = mysqli_query($conn, "SELECT DISTINCT brand FROM vw_storefront_products
 <main class="store-main">
     <div class="container">
         <nav aria-label="breadcrumb"><ol class="breadcrumb small mb-2">
-            <li class="breadcrumb-item"><a href="index.php">Home</a></li>
+            <li class="breadcrumb-item"><a href="home.php">Home</a></li>
             <li class="breadcrumb-item"><a href="shop.php">Shop</a></li>
             <?php if ($open_category != '') { ?><li class="breadcrumb-item active"><?php echo htmlspecialchars($open_category); ?></li><?php } elseif ($q != '') { ?><li class="breadcrumb-item active">Search: <?php echo htmlspecialchars($q); ?></li><?php } ?>
         </ol></nav>

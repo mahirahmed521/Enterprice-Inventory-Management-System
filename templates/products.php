@@ -15,11 +15,22 @@
         <input type="hidden" name="existing_product_image" value="<?php echo htmlspecialchars($product_image); ?>">
         <div class="row g-3 mb-3">
             <div class="col-12 col-sm-6 col-xl-4">
-                <label class="form-label" for="product_image">Product image</label>
+                <label class="form-label" for="product_image">Upload a new picture</label>
                 <input class="form-control" id="product_image" name="product_image" type="file" accept="image/*">
+                <div class="form-text">Saved in the pictures folder. The database keeps only the file name.</div>
             </div>
             <div class="col-12 col-sm-6 col-xl-4">
-                <img src="../<?php echo htmlspecialchars($product_image); ?>" data-image-preview alt="Product preview" style="width:120px;height:120px;object-fit:cover" onerror="this.src='../uploads/products/default.png'">
+                <label class="form-label" for="picture_choice">Or pick one already in the pictures folder</label>
+                <select class="form-select" id="picture_choice" name="picture_choice" data-picture-choice>
+                    <option value="">Keep current picture</option>
+                    <?php $picture_files = list_pictures(); $pf = 0; while (isset($picture_files[$pf])) { ?>
+                        <option value="<?php echo htmlspecialchars($picture_files[$pf]); ?>" data-src="<?php echo htmlspecialchars(product_image_url($picture_files[$pf], '../')); ?>" <?php if ($product_image == $picture_files[$pf]) { echo 'selected'; } ?>><?php echo htmlspecialchars($picture_files[$pf]); ?></option>
+                    <?php $pf = $pf + 1; } ?>
+                </select>
+            </div>
+            <div class="col-12 col-sm-6 col-xl-4">
+                <img src="<?php echo htmlspecialchars(product_image_url($product_image, '../')); ?>" data-image-preview alt="Product preview" style="width:120px;height:120px;object-fit:cover" onerror="this.onerror=null;this.src='../pictures/default.png'">
+                <div class="small text-muted mt-1">Current: <?php echo htmlspecialchars($product_image); ?></div>
             </div>
         </div>
         <div class="row g-3">
@@ -147,8 +158,7 @@
             <tbody>
             <?php while ($row = mysqli_fetch_assoc($products)) { ?>
                 <tr>
-                    <?php $row_image = $row['product_image']; if ($row_image == '') { $row_image = 'uploads/products/default.png'; } ?>
-                    <td><img src="../<?php echo htmlspecialchars($row_image); ?>" alt="" style="width:64px;height:64px;object-fit:cover" onerror="this.src='../uploads/products/default.png'"></td>
+                    <td><img src="<?php echo htmlspecialchars(product_image_url($row['product_image'], '../')); ?>" alt="" style="width:64px;height:64px;object-fit:cover" onerror="this.onerror=null;this.src='../pictures/default.png'"></td>
                     <td><strong><?php echo htmlspecialchars($row['product_name']); ?></strong><br><small><?php echo htmlspecialchars($row['sku']); ?></small></td>
                     <td><?php echo htmlspecialchars($row['brand']); ?></td>
                     <td><?php if ($row['category'] == null) {

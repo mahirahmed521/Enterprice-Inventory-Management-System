@@ -118,15 +118,12 @@ $grand_total = $subtotal + $estimated_tax + $shipping_fee;
                         <?php $n = 0; while ($n < $item_total) { ?>
                             <?php
                             $item = $cart_items[$n];
-                            $p_img = $item['product_image'];
-                            if ($p_img == '') {
-                                $p_img = 'uploads/products/default.png';
-                            }
+                            $p_img = product_image_url($item['product_image']);
                             $stock_status = $item['stock_status'];
                             include __DIR__ . '/includes/stock_badge.php';
                             ?>
                             <div class="row g-3 align-items-center py-3 border-bottom">
-                                <div class="col-auto"><img class="cart-thumb" src="<?php echo htmlspecialchars($p_img); ?>" onerror="this.src='uploads/products/default.png'" alt="<?php echo htmlspecialchars($item['product_name']); ?>"></div>
+                                <div class="col-auto"><img class="cart-thumb" src="<?php echo htmlspecialchars($p_img); ?>" onerror="this.onerror=null;this.src='pictures/default.png'" alt="<?php echo htmlspecialchars($item['product_name']); ?>"></div>
                                 <div class="col">
                                     <a class="fw-semibold text-decoration-none" href="product.php?id=<?php echo $item['product_id']; ?>"><?php echo htmlspecialchars($item['product_name']); ?></a>
                                     <div class="small text-muted"><?php echo htmlspecialchars((string) $item['brand']); ?></div>

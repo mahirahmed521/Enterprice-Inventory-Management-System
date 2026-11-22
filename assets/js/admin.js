@@ -34,3 +34,12 @@ if (imageInput && imagePreview) {
         }
     });
 }
+const pictureChoice = document.querySelector('[data-picture-choice]');
+if (pictureChoice && imagePreview) {
+    pictureChoice.addEventListener('change', function () {
+        const picked = pictureChoice.options[pictureChoice.selectedIndex];
+        if (picked && picked.getAttribute('data-src')) {
+            imagePreview.src = picked.getAttribute('data-src');
+        }
+    });
+}

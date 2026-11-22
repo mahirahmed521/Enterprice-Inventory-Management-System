@@ -65,13 +65,10 @@ if ($tax_amount < 0) {
                     <?php $n = 0; while ($n < $item_total) { ?>
                         <?php
                         $item = $item_rows[$n];
-                        $p_img = $item['product_image'];
-                        if ($p_img == '') {
-                            $p_img = 'uploads/products/default.png';
-                        }
+                        $p_img = product_image_url($item['product_image']);
                         ?>
                         <div class="d-flex align-items-center gap-3 py-2 border-bottom">
-                            <img class="cart-thumb" src="<?php echo htmlspecialchars($p_img); ?>" onerror="this.src='uploads/products/default.png'" alt="">
+                            <img class="cart-thumb" src="<?php echo htmlspecialchars($p_img); ?>" onerror="this.onerror=null;this.src='pictures/default.png'" alt="">
                             <div class="flex-grow-1"><strong><?php echo htmlspecialchars($item['product_name']); ?></strong><div class="small text-muted"><?php echo htmlspecialchars((string) $item['brand']); ?> &middot; Quantity <?php echo $item['quantity']; ?></div></div>
                             <strong class="price"><?php echo $currency . number_format($item['quantity'] * (float) $item['unit_price'], 2); ?></strong>
                         </div>
@@ -96,7 +93,7 @@ if ($tax_amount < 0) {
                     <div class="d-grid gap-2">
                         <a class="btn btn-orange" href="my_orders.php">Track My Order</a>
                         <a class="btn btn-outline-orange" href="order_invoice.php?so_id=<?php echo $so_id; ?>">Print Invoice</a>
-                        <a class="btn btn-orange" href="index.php">Continue Shopping</a>
+                        <a class="btn btn-orange" href="home.php">Continue Shopping</a>
                     </div>
                 </div></div>
             </aside>

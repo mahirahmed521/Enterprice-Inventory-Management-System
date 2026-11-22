@@ -89,7 +89,7 @@ CREATE TABLE `products` (
   `tax_rate` decimal(5,2) NOT NULL DEFAULT '0.00',
   `reorder_point` int NOT NULL DEFAULT '10',
   `reorder_quantity` int NOT NULL DEFAULT '50',
-  `product_image` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'uploads/products/default.png',
+  `product_image` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'default.png',
   `specifications` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `warranty_period` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT '1 Year Official Warranty',
   `is_featured` tinyint(1) NOT NULL DEFAULT '0',
@@ -106,11 +106,11 @@ INSERT INTO `products` (`product_id`, `sku`, `barcode`, `product_name`, `brand`,
 (1, 'PER-MOU-001', '8901112223331', 'Logitech Wireless Mouse M185', 'Logitech', 2, 1, 'pcs', 8.50, 14.00, 5.00, 20, 100, 'uploads/products/mouse-m185.jpg', '2.4GHz Wireless, 1000 DPI Optical Sensor, 12-Month Battery Life, USB Nano Receiver', '1 Year Official Warranty', 0, 0, '2026-11-07 18:01:51', '2026-11-07 18:01:51'),
 (2, 'PER-KEY-002', '8901112223332', 'Mechanical RGB Keyboard', 'KeyTech', 2, 1, 'pcs', 32.00, 55.00, 5.00, 15, 50, 'uploads/products/rgb-keyboard.jpg', 'Hot-Swappable Blue Switches, Full RGB Backlight, Braided USB-C Cable, Anti-Ghosting', '1 Year Replacement Warranty', 0, 0, '2026-11-07 18:01:51', '2026-11-07 18:01:51'),
 (3, 'FUR-CHR-001', '8901112223333', 'Ergonomic Mesh Office Chair', 'WorkSpace', NULL, 2, 'pcs', 75.00, 130.00, 7.50, 5, 20, 'uploads/products/mesh-chair.jpg', 'Breathable Mesh Back, Adjustable Lumbar Support, 360 Swivel Nylon Base', '2 Years Structural Warranty', 0, 0, '2026-11-07 18:01:51', '2026-11-07 18:01:51'),
-(4, 'ACC-CLN-001', NULL, 'Portable Cleaning Kit', 'Vexron', 3, NULL, 'pcs', 0.00, 500.00, 0.00, 0, 0, 'uploads/products/cleaning-kit-portable.jpg', 'Portable multi-purpose cleaning kit for electronics.', 'No Warranty', 1, 1, '2026-11-21 00:00:00', '2026-11-21 00:00:00'),
-(5, 'ACC-CLN-002', NULL, 'Keyboard Multi Cleaning Kit', 'Vexron', 3, NULL, 'pcs', 0.00, 2000.00, 0.00, 0, 0, 'uploads/products/keyboard-cleaning-kit.jpg', 'Multi-function cleaning kit with keyboard wrist support.', 'No Warranty', 0, 1, '2026-11-21 00:00:00', '2026-11-21 00:00:00'),
-(6, 'LGT-TBL-001', NULL, 'Galaxy Orb Table Lamp', 'Vexron', 4, NULL, 'pcs', 0.00, 500.00, 0.00, 0, 0, 'uploads/products/galaxy-orb-lamp.webp', 'Galaxy orb table lamp.', 'No Warranty', 0, 1, '2026-11-21 00:00:00', '2026-11-21 00:00:00'),
-(7, 'COL-FIG-004', NULL, 'Gear 4 Luffy Bounce Man', 'Vexron', 6, NULL, 'pcs', 0.00, 3000.00, 0.00, 0, 0, 'uploads/products/luffy-gear-4.webp', 'Gear 4 Luffy Bounce Man collectible figure.', 'No Warranty', 0, 1, '2026-11-21 00:00:00', '2026-11-21 00:00:00'),
-(8, 'COL-FIG-005', NULL, 'Gear 5 Luffy', 'Vexron', 6, NULL, 'pcs', 0.00, 1000.00, 0.00, 0, 0, 'uploads/products/luffy-gear-5.webp', 'Gear 5 Luffy collectible figure.', 'No Warranty', 0, 1, '2026-11-21 00:00:00', '2026-11-21 00:00:00');
+(4, 'ACC-CLN-001', NULL, 'Portable Cleaning Kit', 'Vexron', 3, NULL, 'pcs', 0.00, 500.00, 0.00, 0, 0, 'f58a262645222a9025b209773081cf77.jpg_720x720q80.jpg', 'Portable multi-purpose cleaning kit for electronics.', 'No Warranty', 1, 1, '2026-11-21 00:00:00', '2026-11-21 00:00:00'),
+(5, 'ACC-CLN-002', NULL, 'Keyboard Multi Cleaning Kit', 'Vexron', 3, NULL, 'pcs', 0.00, 2000.00, 0.00, 0, 0, 'images.jpg', 'Multi-function cleaning kit with keyboard wrist support.', 'No Warranty', 0, 1, '2026-11-21 00:00:00', '2026-11-21 00:00:00'),
+(6, 'LGT-TBL-001', NULL, 'Galaxy Orb Table Lamp', 'Vexron', 4, NULL, 'pcs', 0.00, 500.00, 0.00, 0, 0, 'galaxy-orb-lamp.webp', 'Galaxy orb table lamp.', 'No Warranty', 0, 1, '2026-11-21 00:00:00', '2026-11-21 00:00:00'),
+(7, 'COL-FIG-004', NULL, 'Gear 4 Luffy Bounce Man', 'Vexron', 6, NULL, 'pcs', 0.00, 3000.00, 0.00, 0, 0, 'images (1).jpg', 'Gear 4 Luffy Bounce Man collectible figure.', 'No Warranty', 0, 1, '2026-11-21 00:00:00', '2026-11-21 00:00:00'),
+(8, 'COL-FIG-005', NULL, 'Gear 5 Luffy', 'Vexron', 6, NULL, 'pcs', 0.00, 1000.00, 0.00, 0, 0, 'images (2).jpg', 'Gear 5 Luffy collectible figure.', 'No Warranty', 0, 1, '2026-11-21 00:00:00', '2026-11-21 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -797,6 +797,23 @@ ALTER TABLE `warehouses`
 ALTER TABLE `warehouse_stock`
   ADD CONSTRAINT `warehouse_stock_ibfk_1` FOREIGN KEY (`warehouse_id`) REFERENCES `warehouses` (`warehouse_id`) ON DELETE CASCADE,
   ADD CONSTRAINT `warehouse_stock_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`) ON DELETE CASCADE;
+
+--
+-- Table structure for table `wishlist_items` (customer wishlist)
+--
+
+CREATE TABLE `wishlist_items` (
+  `wishlist_id` int NOT NULL AUTO_INCREMENT,
+  `customer_id` int NOT NULL,
+  `product_id` int NOT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`wishlist_id`),
+  UNIQUE KEY `uq_wishlist_customer_product` (`customer_id`,`product_id`),
+  KEY `idx_wishlist_product` (`product_id`),
+  CONSTRAINT `fk_wishlist_customer` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`customer_id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_wishlist_product` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

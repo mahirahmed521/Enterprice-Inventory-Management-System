@@ -1,9 +1,11 @@
 <?php
 // Add to Cart and Buy Now posts. The page must start the session and load $conn first.
+// The wishlist heart on the product cards is handled here too.
+include __DIR__ . '/wishlist_actions.php';
 $cart_action = '';
 $cart_product_id = 0;
 $cart_quantity = 1;
-$cart_return = 'index.php';
+$cart_return = 'home.php';
 if (isset($_POST['action'])) {
     $cart_action = $_POST['action'];
 }

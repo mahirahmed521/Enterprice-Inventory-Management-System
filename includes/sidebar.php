@@ -4,6 +4,9 @@ $nav_role = $_SESSION['role'];
 if (strpos($current_page, 'dashboard_') === 0) {
     $current_page = 'dashboard.php';
 }
+if ($current_page == 'admin_profile.php' || $current_page == 'manager_profile.php' || $current_page == 'staff_profile.php') {
+    $current_page = 'profile.php';
+}
 ?>
 <aside class="sidebar-wrapper" id="sidebar">
     <a class="brand" href="dashboard.php"><span class="brand-icon"><i class="bx bx-package" aria-hidden="true"></i></span>Stockroom<span class="brand-dot">.</span></a>
@@ -48,10 +51,6 @@ if (strpos($current_page, 'dashboard_') === 0) {
             echo 'aria-current="page"';
         } ?>><i class="bx bx-group" aria-hidden="true"></i><span>Customers</span></a>
         <?php } ?>
-        <?php if ($nav_role == 'CUSTOMER') { ?>
-        <a class="sidebar-link" href="../shop.php"><i class="bx bx-package"></i>Shop</a>
-        <a class="sidebar-link" href="customer_profile.php"><i class="bx bx-user"></i>Delivery details</a>
-        <?php } ?>
         <p class="nav-label">Orders</p>
         <?php if ($warehouse_access) { ?>
         <a class="sidebar-link <?php if ($current_page == 'purchase_orders.php') {
@@ -95,8 +94,9 @@ if (strpos($current_page, 'dashboard_') === 0) {
             echo 'aria-current="page"';
         } ?>><i class="bx bx-user-circle" aria-hidden="true"></i><span>Users</span></a>
         <?php } ?>
-        <a class="sidebar-link" href="../index.php"><i class="bx bx-store" aria-hidden="true"></i><span>View storefront</span></a>
+        <a class="sidebar-link" href="../home.php"><i class="bx bx-store" aria-hidden="true"></i><span>View storefront</span></a>
     </nav>
-    <div class="sidebar-bottom"><a class="sidebar-link" href="logout.php"><i class="bx bx-log-out" aria-hidden="true"></i>Log out</a></div>
+    <div class="sidebar-bottom"><a class="sidebar-link <?php if ($current_page == 'profile.php') { echo 'active'; } ?>" href="profile.php"><i class="bx bx-user" aria-hidden="true"></i>My profile</a>
+<a class="sidebar-link" href="logout.php"><i class="bx bx-log-out" aria-hidden="true"></i>Log out</a></div>
 </aside>
 <button type="button" class="sidebar-overlay" id="sidebar-overlay" aria-label="Close navigation" hidden></button>

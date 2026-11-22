@@ -33,13 +33,24 @@ if (isset($_SESSION['store_notice'])) {
 }
 $header_cart_keys = array_keys($_SESSION['cart']);
 $cart_count = count($header_cart_keys);
+$wish_count = 0;
+if (isset($_SESSION['user_id'])) {
+    $header_user_id = (int) $_SESSION['user_id'];
+    $wish_count = (int) db_scalar($conn, "SELECT COUNT(*) FROM wishlist_items w JOIN users u ON u.customer_id=w.customer_id WHERE u.user_id=$header_user_id", 0);
+}
 ?>
 <div class="store-utility">
     <div class="container d-flex flex-wrap justify-content-end py-1 gap-3">
-        <a href="index.php#hp-flash-sale">Flash Sale</a>
+        <a href="home.php#hp-flash-sale">Flash Sale</a>
         <a href="shop.php">All Products</a>
         <a href="my_orders.php">Track My Order</a>
-        <a href="admin/index.php">Staff Portal</a>
+        <a href="wishlist.php">My Wishlist</a>
+        <?php if ($header_role == 'CUSTOMER') { ?>
+            <a href="my_account.php">My Account</a>
+            <a href="my_profile.php">My Profile</a>
+        <?php } elseif ($header_role == 'ADMIN' || $header_role == 'MANAGER' || $header_role == 'STAFF') { ?>
+            <a href="admin/dashboard.php">Staff Dashboard</a>
+        <?php } ?>
         <?php if (isset($_SESSION['user_id'])) { ?>
             <span><?php echo htmlspecialchars($header_user); ?></span>
             <a href="logout.php">Logout</a>
@@ -51,11 +62,12 @@ $cart_count = count($header_cart_keys);
 </div>
 <nav class="navbar store-navbar sticky-top py-2">
     <div class="container flex-nowrap gap-3">
-        <a class="store-logo" href="index.php">Stockroom<small>Electronics</small></a>
+        <a class="store-logo" href="home.php">Stockroom<small>Electronics</small></a>
         <form class="store-search input-group flex-grow-1" method="get" action="shop.php">
             <input class="form-control" type="search" name="q" value="<?php echo htmlspecialchars($search_value); ?>" placeholder="Search in Store..." aria-label="Search products">
             <button class="btn" type="submit" aria-label="Search"><i class="bx bx-search"></i></button>
         </form>
+        <a class="store-cart store-wish-link ms-2" href="wishlist.php" aria-label="My wishlist"><i class="bx bx-heart"></i><span class="store-cart-badge"><?php echo $wish_count; ?></span></a>
         <a class="store-cart ms-2" href="cart.php" aria-label="Shopping cart"><i class="bx bx-cart"></i><span class="store-cart-badge"><?php echo $cart_count; ?></span></a>
     </div>
 </nav>

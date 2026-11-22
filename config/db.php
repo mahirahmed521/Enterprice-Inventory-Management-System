@@ -15,3 +15,5 @@ $sql = "SET SESSION sql_mode = CONCAT(@@sql_mode, ',NO_BACKSLASH_ESCAPES')";
 if (mysqli_query($conn, $sql) == false) {
     exit('Could not set up the database connection.');
 }
+require_once __DIR__ . '/../includes/helpers.php';
+require_once __DIR__ . '/../includes/prg.php';

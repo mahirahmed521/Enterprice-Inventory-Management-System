@@ -36,7 +36,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $error = 'Email or password is incorrect.';
         } elseif ($user['is_active'] == 0) {
             $error = 'Your account is inactive.';
+        } elseif ($user['role'] != 'ADMIN' && $user['role'] != 'MANAGER' && $user['role'] != 'STAFF') {
+            $error = 'This sign-in is for team members. Customers can sign in from the store.';
         } else {
+            session_regenerate_id(true);
             $_SESSION['user_id'] = $user['user_id'];
             $_SESSION['role'] = $user['role'];
             $home = 'dashboard.php';

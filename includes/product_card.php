@@ -1,9 +1,7 @@
 <?php
 // One product card. Expects $product (a vw_storefront_products row plus avg_rating and review_count) and $currency.
-$p_img = $product['product_image'];
-if ($p_img == '') {
-    $p_img = 'uploads/products/default.png';
-}
+// $wish_ids (from includes/wishlist_actions.php) is optional and fills the heart.
+$p_img = product_image_url($product['product_image']);
 $stock_status = $product['stock_status'];
 include __DIR__ . '/stock_badge.php';
 $rounded_rating = (int) round((float) $product['avg_rating']);
@@ -11,9 +9,22 @@ $buy_disabled = '';
 if ($product['available_to_sell'] <= 0) {
     $buy_disabled = 'disabled';
 }
+$is_wished = false;
+if (isset($wish_ids)) {
+    if (in_array((int) $product['product_id'], $wish_ids)) {
+        $is_wished = true;
+    }
+}
 ?>
 <div class="product-card d-flex flex-column">
-    <a class="product-thumb" href="product.php?id=<?php echo $product['product_id']; ?>"><img src="<?php echo htmlspecialchars($p_img); ?>" onerror="this.src='uploads/products/default.png'" alt="<?php echo htmlspecialchars($product['product_name']); ?>"></a>
+    <div class="product-media">
+        <a class="product-thumb" href="product.php?id=<?php echo $product['product_id']; ?>"><img src="<?php echo htmlspecialchars($p_img); ?>" onerror="this.onerror=null;this.src='pictures/default.png'" alt="<?php echo htmlspecialchars($product['product_name']); ?>" loading="lazy"></a>
+        <form method="post" class="wish-form">
+            <input type="hidden" name="action" value="toggle_wish">
+            <input type="hidden" name="product_id" value="<?php echo $product['product_id']; ?>">
+            <button class="wish-btn <?php if ($is_wished) { echo 'on'; } ?>" type="submit" aria-label="<?php if ($is_wished) { echo 'Remove from wishlist'; } else { echo 'Add to wishlist'; } ?>" title="<?php if ($is_wished) { echo 'Remove from wishlist'; } else { echo 'Add to wishlist'; } ?>"><i class="bx <?php if ($is_wished) { echo 'bxs-heart'; } else { echo 'bx-heart'; } ?>"></i></button>
+        </form>
+    </div>
     <div class="p-2 d-flex flex-column flex-grow-1">
         <div class="product-brand text-truncate"><?php echo htmlspecialchars((string) $product['brand']); ?><?php if ($product['category_name'] != '') { echo ' &middot; ' . htmlspecialchars((string) $product['category_name']); } ?></div>
         <h3 class="product-title"><a href="product.php?id=<?php echo $product['product_id']; ?>"><?php echo htmlspecialchars($product['product_name']); ?></a></h3>

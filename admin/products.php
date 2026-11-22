@@ -23,7 +23,11 @@ $brand = '';
 $specifications = '';
 $warranty_period = '1 Year Official Warranty';
 $is_featured = '0';
-$product_image = 'uploads/products/default.png';
+$product_image = 'default.png';
+$picture_choice = '';
+if (isset($_POST['picture_choice'])) {
+    $picture_choice = $_POST['picture_choice'];
+}
 if (isset($_POST['brand'])) {
     $brand = $_POST['brand'];
 }
@@ -133,7 +137,7 @@ if ($can_edit) {
             $is_featured = $record['is_featured'];
             $product_image = $record['product_image'];
             if ($product_image == '') {
-                $product_image = 'uploads/products/default.png';
+                $product_image = 'default.png';
             }
         }
     }
@@ -202,8 +206,16 @@ if ($action == 'delete') {
         $img_size = $_FILES['product_image']['size'];
     }
     if ($img_name == '') {
+        if ($picture_choice != '') {
+            // A picture that is already in the pictures folder
+            if (in_array($picture_choice, list_pictures())) {
+                $product_image = $picture_choice;
+            } else {
+                $upload_error = 'Choose a picture from the list.';
+            }
+        }
         if ($product_image == '') {
-            $product_image = 'uploads/products/default.png';
+            $product_image = 'default.png';
         }
     } else {
         // Only real JPG, PNG, WEBP or GIF pictures are allowed
@@ -220,8 +232,8 @@ if ($action == 'delete') {
         } else {
             $safe_name = preg_replace('/[^A-Za-z0-9._-]/', '_', basename($img_name));
             $new_file_name = time() . '_' . $safe_name;
-            $move_to = __DIR__ . '/../uploads/products/' . $new_file_name;
-            $product_image = 'uploads/products/' . $new_file_name;
+            $move_to = __DIR__ . '/../pictures/' . $new_file_name;
+            $product_image = $new_file_name;
         }
     }
     $editor = 'edit';

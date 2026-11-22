@@ -22,10 +22,10 @@ if (isset($_SESSION['user_id']) == false) {
             }
         }
     }
-    header('Location: index.php');
+    header('Location: ../index.php');
     exit;
 }
-$user_id = $_SESSION['user_id'];
+$user_id = (int) $_SESSION['user_id'];
 
 $sql = "SELECT user_id, username, role, customer_id FROM users WHERE user_id=$user_id AND is_active=1";
 $users = mysqli_query($conn, $sql);
@@ -34,10 +34,17 @@ if ($users == false) {
 }
 if (mysqli_num_rows($users) == 0) {
     session_destroy();
-    header('Location: index.php');
+    header('Location: ../index.php');
     exit;
 }
 $account = mysqli_fetch_assoc($users);
+
+// Everything that includes this file belongs to the staff portal. Customers have their own
+// pages in the store, so a customer who opens any portal address is sent back to the store.
+if ($account['role'] != 'ADMIN' && $account['role'] != 'MANAGER' && $account['role'] != 'STAFF') {
+    header('Location: ../my_account.php');
+    exit;
+}
 $supervisor = false;
 $warehouse_access = false;
 if ($account['role'] == 'ADMIN') {

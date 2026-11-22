@@ -5,6 +5,7 @@
 <link rel="stylesheet" href="../assets/css/dashboard.css">
 <link rel="stylesheet" href="../assets/css/business-overview.css">
 <link rel="stylesheet" href="../assets/css/modules.css">
+<link rel="stylesheet" href="../assets/css/profile.css">
 </head><body class="workspace-page">
 <?php include __DIR__ . '/sidebar.php'; ?>
 <?php include __DIR__ . '/topbar.php'; ?>
