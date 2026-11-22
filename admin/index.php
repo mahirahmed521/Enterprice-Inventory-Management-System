@@ -1,5 +1,7 @@
 <?php
 require_once __DIR__ . '/../includes/check_fields.php';
+require_once __DIR__ . '/../config/db.php';
+include __DIR__ . '/../includes/quote_fields.php';
 session_start();
 $pageTitle = 'Sign in';
 $error = '';
@@ -7,21 +9,21 @@ $email = '';
 $password = '';
 
 if (isset($_POST['email'])) {
-    $email = trim($_POST['email']);
+    $email = $_POST['email'];
 }
 if (isset($_POST['password'])) {
-    $password = trim($_POST['password']);
+    $password = $_POST['password'];
 }
 if (isset($_SESSION['user_id'])) {
     header('Location: dashboard.php');
     exit;
 }
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    require '../config/db.php';
+    
     $sql_text = [
         'email' => $email
     ];
-    include __DIR__ . '/../includes/quote_fields.php';
+    
     $address = $sql_text['email'];
     $users = mysqli_query($conn, "SELECT user_id,role,is_active,password_hash FROM users WHERE email='$address'");
     if ($users == false) {

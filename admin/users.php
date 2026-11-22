@@ -1,5 +1,9 @@
 <?php
 require_once __DIR__ . '/../includes/check_fields.php';
+$required_role = 'ADMIN';
+require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../config/db.php';
+
 $pageTitle = 'Users';
 $section = 'Team';
 $error = '';
@@ -11,31 +15,29 @@ $password = '';
 $role = 'STAFF';
 $customer_id = '';
 $is_active = '1';
+$hash = '';
 
 if (isset($_POST['action'])) {
-    $action = trim($_POST['action']);
+    $action = $_POST['action'];
 }
 if (isset($_POST['username'])) {
-    $username = trim($_POST['username']);
+    $username = $_POST['username'];
 }
 if (isset($_POST['email'])) {
-    $email = trim($_POST['email']);
+    $email = $_POST['email'];
 }
 if (isset($_POST['password'])) {
-    $password = trim($_POST['password']);
+    $password = $_POST['password'];
 }
 if (isset($_POST['role'])) {
-    $role = trim($_POST['role']);
+    $role = $_POST['role'];
 }
 if (isset($_POST['customer_id'])) {
-    $customer_id = trim($_POST['customer_id']);
+    $customer_id = $_POST['customer_id'];
 }
 if (isset($_POST['is_active'])) {
-    $is_active = trim($_POST['is_active']);
+    $is_active = $_POST['is_active'];
 }
-
-$required_role = 'ADMIN';
-require '../includes/auth.php';
 
 if ($id > 0) {
     $records = mysqli_query($conn, "SELECT * FROM users WHERE user_id=$id");
@@ -146,6 +148,7 @@ if ($action == 'delete') {
                     role='$role',
                     customer_id=$customer_id_sql,
                     is_active='$is_active'";
+        
         if (isset($password[0])) {
             $hash = password_hash($password, PASSWORD_DEFAULT);
             $details = $details . ",password_hash='$hash'";

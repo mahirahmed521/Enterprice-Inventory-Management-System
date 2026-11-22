@@ -22,7 +22,7 @@ Choose a role on the signup page to create an active local demo account. The imp
 
 ## Files and database
 
-- `index.html` is the public homepage. `catalog.php` reads products and availability from MySQL.
+- `index.php` is the public Daraz-style storefront home page. `shop.php`, `product.php`, `cart.php`, `checkout.php`, `order_success.php`, `my_orders.php` and `order_invoice.php` read products, stock and orders live from MySQL.
 - `admin/` contains login, signup, the four role dashboards, record forms, order processing, warehouse operations and reports.
 - `includes/` contains authentication and shared page layouts. The live forms and tables are in `templates/`.
 - `config/db.php` connects to the local `intermediate_inventory` database using MySQLi.

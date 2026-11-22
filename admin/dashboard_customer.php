@@ -2,7 +2,8 @@
 $pageTitle = 'Customer dashboard';
 $section = 'Overview';
 $required_role = 'CUSTOMER';
-require '../includes/auth.php';
+require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../config/db.php';
 
 $customer = 0;
 if (isset($account['customer_id'])) {

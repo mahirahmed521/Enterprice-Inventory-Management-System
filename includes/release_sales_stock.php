@@ -1,4 +1,18 @@
 <?php
+require_once __DIR__ . '/../config/db.php';
+
+if (isset($user_id) == false) {
+    if (isset($_SESSION['user_id'])) {
+        $user_id = $_SESSION['user_id'];
+    } else {
+        $user_id = 0;
+    }
+}
+
+if (isset($old_warehouse) == false) {
+    $old_warehouse = $warehouse_id;
+}
+
 $sql = "SELECT product_id, SUM(quantity) AS units FROM sales_order_items
         WHERE so_id=$id GROUP BY product_id ORDER BY product_id";
 $items_to_release = mysqli_query($conn, $sql);

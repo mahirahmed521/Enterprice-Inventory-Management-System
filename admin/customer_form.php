@@ -1,6 +1,6 @@
 <?php
 include '../includes/edit_request.php';
-require '../includes/auth.php';
+require_once __DIR__ . '/../includes/auth.php';
 if ($supervisor == false) {
     exit('Access denied.');
 }

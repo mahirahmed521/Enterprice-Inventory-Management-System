@@ -2,7 +2,8 @@
 $pageTitle = 'Staff dashboard';
 $section = 'Overview';
 $required_role = 'STAFF';
-require '../includes/auth.php';
+require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../config/db.php';
 
 $result = mysqli_query($conn, "SELECT COUNT(*) AS total FROM sales_orders WHERE status='CONFIRMED'");
 if ($result == false) {

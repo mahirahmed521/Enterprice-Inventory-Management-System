@@ -1,6 +1,18 @@
 <?php
+global $conn;
+include __DIR__ . '/release_sales_stock.php';
+if (!isset($id)) {
+    $error = 'Invalid sales order.';
+    return;
+}
+if (!is_numeric($id)) {
+    $error = 'Invalid sales order.';
+    return;
+}
+$id = (int) $id;
 if ($action == 'delete') {
     include __DIR__ . '/release_sales_stock.php';
+    
     if ($error) {
         return;
     }

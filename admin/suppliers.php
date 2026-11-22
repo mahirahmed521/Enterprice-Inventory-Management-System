@@ -1,9 +1,12 @@
 <?php
 require_once __DIR__ . '/../includes/check_fields.php';
+include '../includes/edit_request.php';
+require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../config/db.php';
 $pageTitle = 'Suppliers';
 $section = 'Directory';
 $error = '';
-include '../includes/edit_request.php';
+
 $action = '';
 $company_name = '';
 $contact_person = '';
@@ -14,31 +17,31 @@ $address = '';
 $is_active = '1';
 
 if (isset($_POST['action'])) {
-    $action = trim($_POST['action']);
+    $action = $_POST['action'];
 }
 if (isset($_POST['company_name'])) {
-    $company_name = trim($_POST['company_name']);
+    $company_name = $_POST['company_name'];
 }
 if (isset($_POST['contact_person'])) {
-    $contact_person = trim($_POST['contact_person']);
+    $contact_person = $_POST['contact_person'];
 }
 if (isset($_POST['email'])) {
-    $email = trim($_POST['email']);
+    $email = $_POST['email'];
 }
 if (isset($_POST['phone'])) {
-    $phone = trim($_POST['phone']);
+    $phone = $_POST['phone'];
 }
 if (isset($_POST['tax_id'])) {
-    $tax_id = trim($_POST['tax_id']);
+    $tax_id = $_POST['tax_id'];
 }
 if (isset($_POST['address'])) {
-    $address = trim($_POST['address']);
+    $address = $_POST['address'];
 }
 if (isset($_POST['is_active'])) {
-    $is_active = trim($_POST['is_active']);
+    $is_active = $_POST['is_active'];
 }
 
-require '../includes/auth.php';
+
 if ($supervisor == false) {
     exit('Access denied.');
 }

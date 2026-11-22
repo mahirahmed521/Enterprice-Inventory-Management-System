@@ -10,19 +10,20 @@ $parent_id = '';
 $description = '';
 
 if (isset($_POST['action'])) {
-    $action = trim($_POST['action']);
+    $action = $_POST['action'];
 }
 if (isset($_POST['name'])) {
-    $name = trim($_POST['name']);
+    $name = $_POST['name'];
 }
 if (isset($_POST['parent_id'])) {
-    $parent_id = trim($_POST['parent_id']);
+    $parent_id = $_POST['parent_id'];
 }
 if (isset($_POST['description'])) {
-    $description = trim($_POST['description']);
+    $description = $_POST['description'];
 }
 
-require '../includes/auth.php';
+require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../config/db.php';
 if ($supervisor == false) {
     exit('Access denied.');
 }

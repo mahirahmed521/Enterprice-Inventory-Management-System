@@ -2,7 +2,8 @@
 $pageTitle = 'Inventory valuation';
 $section = 'Reports';
 $required_role = 'ADMIN';
-require '../includes/auth.php';
+require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../config/db.php';
 
 $sql = "SELECT * FROM vw_inventory_valuation ORDER BY product_name,sku";
 $rows = mysqli_query($conn, $sql);

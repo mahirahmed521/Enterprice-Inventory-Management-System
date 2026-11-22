@@ -1,7 +1,8 @@
 <?php
 $pageTitle = 'Reorder alerts';
 $section = 'Reports';
-require '../includes/auth.php';
+require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../config/db.php';
 if ($supervisor == false) {
     exit('Access denied.');
 }

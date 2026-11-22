@@ -1,4 +1,17 @@
 <?php
+require_once __DIR__ . '/../config/db.php';
+if (!isset($user_id)) {
+    if (isset($_SESSION['user_id'])) {
+        $user_id = $_SESSION['user_id'];
+    } else {
+        $user_id = 0;
+    }
+}
+$user_id = (int) $user_id;
+if ($user_id <= 0) {
+    $error = 'Could not identify the user performing this movement.';
+    return;
+}
 $sql = "SELECT product_id FROM products WHERE product_id=$product_id AND is_active=1";
 $products = mysqli_query($conn, $sql);
 $warehouses = mysqli_query($conn, "SELECT warehouse_id FROM warehouses WHERE warehouse_id=$warehouse_id AND is_active=1");
@@ -61,8 +74,10 @@ if ($take_from_stock) {
     }
     $change = 0 - $units;
 }
-$sql = "INSERT INTO stock_movements (product_id, notes, performed_by, reference_type, warehouse_id, movement_type, quantity_change)
-                VALUES ($product_id, '$reason', $user_id, '$source', $warehouse_id, '$type', $change)";
+$sql = "INSERT INTO stock_movements
+    (product_id, notes, performed_by, reference_type, warehouse_id, movement_type, quantity_change)
+    VALUES
+    ($product_id, '$reason', $user_id, '$source', $warehouse_id, '$type', $change)";
 if (mysqli_query($conn, $sql) == false) {
     $error = 'Could not post the movement.';
     return;

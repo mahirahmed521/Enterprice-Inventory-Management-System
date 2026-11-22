@@ -8,16 +8,17 @@ $phone = '';
 $shipping_address = '';
 
 if (isset($_POST['customer_name'])) {
-    $customer_name = trim($_POST['customer_name']);
+    $customer_name = $_POST['customer_name'];
 }
 if (isset($_POST['phone'])) {
-    $phone = trim($_POST['phone']);
+    $phone = $_POST['phone'];
 }
 if (isset($_POST['shipping_address'])) {
-    $shipping_address = trim($_POST['shipping_address']);
+    $shipping_address = $_POST['shipping_address'];
 }
 $required_role = 'CUSTOMER';
-require '../includes/auth.php';
+require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../config/db.php';
 
 $customer = 0;
 if (isset($account['customer_id'])) {

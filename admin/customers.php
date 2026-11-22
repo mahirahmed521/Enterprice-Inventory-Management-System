@@ -11,22 +11,23 @@ $phone = '';
 $shipping_address = '';
 
 if (isset($_POST['action'])) {
-    $action = trim($_POST['action']);
+    $action = $_POST['action'];
 }
 if (isset($_POST['customer_name'])) {
-    $customer_name = trim($_POST['customer_name']);
+    $customer_name = $_POST['customer_name'];
 }
 if (isset($_POST['email'])) {
-    $email = trim($_POST['email']);
+    $email = $_POST['email'];
 }
 if (isset($_POST['phone'])) {
-    $phone = trim($_POST['phone']);
+    $phone = $_POST['phone'];
 }
 if (isset($_POST['shipping_address'])) {
-    $shipping_address = trim($_POST['shipping_address']);
+    $shipping_address = $_POST['shipping_address'];
 }
 
-require '../includes/auth.php';
+require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../config/db.php';
 if ($supervisor == false) {
     exit('Access denied.');
 }

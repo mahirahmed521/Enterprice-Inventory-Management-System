@@ -1,5 +1,5 @@
 <?php
-require '../includes/auth.php';
+require_once __DIR__ . '/../includes/auth.php';
 
 $home = 'dashboard_customer.php';
 if ($account['role'] == 'ADMIN') {

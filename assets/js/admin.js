@@ -23,3 +23,14 @@ document.addEventListener('keydown', function (event) {
         closeMenu();
     }
 });
+
+// Live preview when a product image is chosen
+const imageInput = document.getElementById('product_image');
+const imagePreview = document.querySelector('[data-image-preview]');
+if (imageInput && imagePreview) {
+    imageInput.addEventListener('change', function () {
+        if (imageInput.files && imageInput.files[0]) {
+            imagePreview.src = URL.createObjectURL(imageInput.files[0]);
+        }
+    });
+}

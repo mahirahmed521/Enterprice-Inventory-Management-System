@@ -49,7 +49,7 @@ if (strpos($current_page, 'dashboard_') === 0) {
         } ?>><i class="bx bx-group" aria-hidden="true"></i><span>Customers</span></a>
         <?php } ?>
         <?php if ($nav_role == 'CUSTOMER') { ?>
-        <a class="sidebar-link" href="../catalog.php"><i class="bx bx-package"></i>Catalog</a>
+        <a class="sidebar-link" href="../shop.php"><i class="bx bx-package"></i>Shop</a>
         <a class="sidebar-link" href="customer_profile.php"><i class="bx bx-user"></i>Delivery details</a>
         <?php } ?>
         <p class="nav-label">Orders</p>
@@ -65,6 +65,9 @@ if (strpos($current_page, 'dashboard_') === 0) {
         } ?>" href="sales_orders.php" <?php if ($current_page == 'sales_orders.php') {
             echo 'aria-current="page"';
         } ?>><i class="bx bx-cart" aria-hidden="true"></i><span>Sales orders</span></a>
+        <?php if ($supervisor) { ?>
+        <a class="sidebar-link <?php if ($current_page == 'reviews.php') { echo 'active'; } ?>" href="reviews.php"><i class="bx bx-star" aria-hidden="true"></i><span>Product reviews</span></a>
+        <?php } ?>
         <?php if ($warehouse_access) { ?>
         <a class="sidebar-link <?php if ($current_page == 'stock_movements.php') {
             echo 'active';
@@ -92,6 +95,7 @@ if (strpos($current_page, 'dashboard_') === 0) {
             echo 'aria-current="page"';
         } ?>><i class="bx bx-user-circle" aria-hidden="true"></i><span>Users</span></a>
         <?php } ?>
+        <a class="sidebar-link" href="../index.php"><i class="bx bx-store" aria-hidden="true"></i><span>View storefront</span></a>
     </nav>
     <div class="sidebar-bottom"><a class="sidebar-link" href="logout.php"><i class="bx bx-log-out" aria-hidden="true"></i>Log out</a></div>
 </aside>

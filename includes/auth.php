@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/check_fields.php';
+require_once __DIR__ . '/../config/db.php';
 session_start();
 if (isset($_SESSION['user_id']) == false) {
     if (basename($_SERVER['SCRIPT_NAME']) == 'sales_orders.php') {
@@ -25,13 +26,13 @@ if (isset($_SESSION['user_id']) == false) {
     exit;
 }
 $user_id = $_SESSION['user_id'];
-require_once __DIR__ . '/../config/db.php';
+
 $sql = "SELECT user_id, username, role, customer_id FROM users WHERE user_id=$user_id AND is_active=1";
 $users = mysqli_query($conn, $sql);
 if ($users == false) {
     exit('Could not load the signed-in account.');
 }
-if ($users->num_rows == 0) {
+if (mysqli_num_rows($users) == 0) {
     session_destroy();
     header('Location: index.php');
     exit;

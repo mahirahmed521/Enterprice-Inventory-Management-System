@@ -2,7 +2,8 @@
 $pageTitle = 'Admin dashboard';
 $section = 'Overview';
 $required_role = 'ADMIN';
-require '../includes/auth.php';
+require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../config/db.php';
 
 $result = mysqli_query($conn, "SELECT SUM(total_inventory_cost) AS total FROM vw_inventory_valuation");
 if ($result == false) {
@@ -31,6 +32,10 @@ $rows = mysqli_query($conn, "SELECT m.movement_date,p.sku,w.warehouse_name,m.mov
 if ($rows == false) {
     exit('Could not load the dashboard.');
 }
+$pending_result = mysqli_query($conn, "SELECT COUNT(*) AS total FROM sales_orders WHERE order_source='ECOMMERCE' AND status='PENDING'");
+$pending_row = mysqli_fetch_assoc($pending_result);
+$summary['pending_online'] = $pending_row['total'];
+$online_orders = mysqli_query($conn, "SELECT o.so_id,o.so_number,o.order_date,o.status,o.total_amount,c.customer_name FROM sales_orders o JOIN customers c ON c.customer_id=o.customer_id WHERE o.order_source='ECOMMERCE' ORDER BY o.so_id DESC LIMIT 8");
 include '../includes/workspace.php';
 include '../templates/dashboard_admin.php';
 include '../includes/end.php';

@@ -18,6 +18,8 @@ if ($order) {
 $delivery = mysqli_fetch_assoc($delivery_result); ?>
 <p>Delivery &middot; <?php if (isset($delivery['phone'])) { echo htmlspecialchars($delivery['phone']); } ?> <?php if (isset($delivery['shipping_address'])) { echo htmlspecialchars($delivery['shipping_address']); } ?></p>
 <strong>Order total <?php echo htmlspecialchars($order['total_amount']); ?></strong></div>
+<p>Source: <?php echo htmlspecialchars($order['order_source']); ?> | Payment: <?php echo htmlspecialchars($order['payment_method']); ?> | Status: <?php echo htmlspecialchars($order['payment_status']); ?><?php if ($order['transaction_id']) { echo ' | Transaction: ' . htmlspecialchars($order['transaction_id']); } ?></p>
+<p>Shipping fee: <?php echo htmlspecialchars($order['shipping_fee']); ?> | Address: <?php echo htmlspecialchars($order['shipping_address']); ?></p>
 <?php } ?>
 <?php if ($editable) { ?>
 <section class="surface records-surface"><div class="section-heading"><h2><?php if ($order) {
@@ -50,7 +52,7 @@ $delivery = mysqli_fetch_assoc($delivery_result); ?>
 <?php if ($order == null) { ?>
 <section class="surface records-surface"><div class="section-heading"><h2>Order history</h2></div>
 <div class="table-responsive"><table class="table inventory-table records-table">
-<thead><tr><th>Order</th><th>Customer</th><th>Warehouse</th><th>Date</th><th>Status</th><th>Total</th></tr></thead>
+<thead><tr><th>Order</th><th>Customer</th><th>Warehouse</th><th>Date</th><th>Source</th><th>Payment</th><th>Status</th><th>Total</th></tr></thead>
 <tbody>
 <?php while ($row = mysqli_fetch_assoc($rows)) { ?>
 <tr>
@@ -58,12 +60,14 @@ $delivery = mysqli_fetch_assoc($delivery_result); ?>
     <td><?php echo htmlspecialchars($row['party']); ?></td>
     <td><?php echo htmlspecialchars($row['warehouse_name']); ?></td>
     <td><?php echo htmlspecialchars($row['order_date']); ?></td>
+    <td><?php echo htmlspecialchars($row['order_source']); ?></td>
+    <td><?php echo htmlspecialchars($row['payment_method']); ?><br><small><?php echo htmlspecialchars($row['payment_status']); ?></small></td>
     <td><span class="record-badge"><?php echo htmlspecialchars($row['status']); ?></span></td>
     <td><?php echo htmlspecialchars($row['total_amount']); ?></td>
 </tr>
 <?php } ?>
 </tbody></table></div>
-<?php if ($rows->num_rows == 0) { ?><p class="empty-state">No records to show.</p><?php } ?>
+<?php if (mysqli_num_rows($rows) == 0) { ?><p class="empty-state">No records to show.</p><?php } ?>
 </section>
 <?php } else { ?>
 <?php if ($editable) { ?><section class="surface records-surface"><div class="section-heading"><h2>Add an item</h2></div>
@@ -92,6 +96,7 @@ $delivery = mysqli_fetch_assoc($delivery_result); ?>
 <?php } ?></tbody></table></div>
 <form method="post" class="module-form actions">
 <?php if ($can_approve) { ?><button class="btn btn-sm btn-outline-success" name="action" value="confirm">Confirm sale</button><?php } ?>
+<?php if ($supervisor) { ?><button class="btn btn-sm btn-outline-success" name="action" value="mark_paid">Mark Paid</button><?php } ?>
 <?php if ($can_ship) { ?><button class="btn btn-sm btn-outline-success" name="action" value="ship">Ship order</button><?php } ?>
 <?php if ($can_cancel) { ?><button class="btn btn-sm btn-outline-success" name="action" value="cancel">Cancel order</button><?php } ?>
 <?php if ($editable) { ?><button class="btn btn-sm btn-outline-success" name="action" value="delete">Delete draft</button><?php } ?>

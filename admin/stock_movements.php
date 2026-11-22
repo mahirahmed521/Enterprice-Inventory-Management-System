@@ -1,5 +1,7 @@
 <?php
 require_once __DIR__ . '/../includes/check_fields.php';
+require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../config/db.php';
 $pageTitle = 'Stock movements';
 $section = 'Warehouse operations';
 $error = '';
@@ -11,22 +13,22 @@ $quantity = '';
 $notes = '';
 
 if (isset($_POST['action'])) {
-    $action = trim($_POST['action']);
+    $action = $_POST['action'];
 }
 if (isset($_POST['warehouse_id'])) {
-    $warehouse_id = trim($_POST['warehouse_id']);
+    $warehouse_id = $_POST['warehouse_id'];
 }
 if (isset($_POST['product_id'])) {
-    $product_id = trim($_POST['product_id']);
+    $product_id = $_POST['product_id'];
 }
 if (isset($_POST['destination'])) {
-    $destination = trim($_POST['destination']);
+    $destination = $_POST['destination'];
 }
 if (isset($_POST['quantity'])) {
-    $quantity = trim($_POST['quantity']);
+    $quantity = $_POST['quantity'];
 }
 if (isset($_POST['notes'])) {
-    $notes = trim($_POST['notes']);
+    $notes = $_POST['notes'];
 }
 $valid_digits = isset($warehouse_id[0]);
 $digit_position = 0;
@@ -70,7 +72,7 @@ while (isset($destination[$digit_position])) {
 if ($valid_digits == false) {
     $destination = 0;
 }
-require '../includes/auth.php';
+
 if ($warehouse_access == false) {
     exit('Access denied.');
 }

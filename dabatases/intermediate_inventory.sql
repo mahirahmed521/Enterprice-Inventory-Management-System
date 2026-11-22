@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Nov 15, 2026 at 06:02 PM
+-- Generation Time: Nov 20, 2026 at 08:36 PM
 -- Server version: 8.4.3
 -- PHP Version: 8.3.36
 
@@ -41,7 +41,10 @@ CREATE TABLE `categories` (
 INSERT INTO `categories` (`category_id`, `parent_id`, `name`, `description`) VALUES
 (1, NULL, 'Electronics', 'Main electronics category'),
 (2, 1, 'Computer Peripherals', 'Mice, keyboards, and monitors'),
-(3, NULL, 'Office Furniture', 'Desks, chairs, and storage');
+(3, 1, 'Cleaning Kit', 'Cleaning accessories for electronics and devices'),
+(4, 1, 'Table Lamp', 'Electronic table lamps and lighting'),
+(5, 1, 'Fans', 'Electric fans and air circulation'),
+(6, NULL, 'Collectibles', 'Collectible figures');
 
 -- --------------------------------------------------------
 
@@ -77,6 +80,7 @@ CREATE TABLE `products` (
   `sku` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `barcode` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `product_name` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `brand` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `category_id` int DEFAULT NULL,
   `preferred_supplier_id` int DEFAULT NULL,
   `unit_of_measure` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pcs',
@@ -85,6 +89,10 @@ CREATE TABLE `products` (
   `tax_rate` decimal(5,2) NOT NULL DEFAULT '0.00',
   `reorder_point` int NOT NULL DEFAULT '10',
   `reorder_quantity` int NOT NULL DEFAULT '50',
+  `product_image` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'uploads/products/default.png',
+  `specifications` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `warranty_period` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT '1 Year Official Warranty',
+  `is_featured` tinyint(1) NOT NULL DEFAULT '0',
   `is_active` tinyint(1) NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -94,10 +102,37 @@ CREATE TABLE `products` (
 -- Dumping data for table `products`
 --
 
-INSERT INTO `products` (`product_id`, `sku`, `barcode`, `product_name`, `category_id`, `preferred_supplier_id`, `unit_of_measure`, `cost_price`, `selling_price`, `tax_rate`, `reorder_point`, `reorder_quantity`, `is_active`, `created_at`, `updated_at`) VALUES
-(1, 'PER-MOU-001', '8901112223331', 'Logitech Wireless Mouse M185', 2, 1, 'pcs', 8.50, 14.00, 5.00, 20, 100, 1, '2026-11-07 18:01:51', '2026-11-07 18:01:51'),
-(2, 'PER-KEY-002', '8901112223332', 'Mechanical RGB Keyboard', 2, 1, 'pcs', 32.00, 55.00, 5.00, 15, 50, 1, '2026-11-07 18:01:51', '2026-11-07 18:01:51'),
-(3, 'FUR-CHR-001', '8901112223333', 'Ergonomic Mesh Office Chair', 3, 2, 'pcs', 75.00, 130.00, 7.50, 5, 20, 1, '2026-11-07 18:01:51', '2026-11-07 18:01:51');
+INSERT INTO `products` (`product_id`, `sku`, `barcode`, `product_name`, `brand`, `category_id`, `preferred_supplier_id`, `unit_of_measure`, `cost_price`, `selling_price`, `tax_rate`, `reorder_point`, `reorder_quantity`, `product_image`, `specifications`, `warranty_period`, `is_featured`, `is_active`, `created_at`, `updated_at`) VALUES
+(1, 'PER-MOU-001', '8901112223331', 'Logitech Wireless Mouse M185', 'Logitech', 2, 1, 'pcs', 8.50, 14.00, 5.00, 20, 100, 'uploads/products/mouse-m185.jpg', '2.4GHz Wireless, 1000 DPI Optical Sensor, 12-Month Battery Life, USB Nano Receiver', '1 Year Official Warranty', 0, 0, '2026-11-07 18:01:51', '2026-11-07 18:01:51'),
+(2, 'PER-KEY-002', '8901112223332', 'Mechanical RGB Keyboard', 'KeyTech', 2, 1, 'pcs', 32.00, 55.00, 5.00, 15, 50, 'uploads/products/rgb-keyboard.jpg', 'Hot-Swappable Blue Switches, Full RGB Backlight, Braided USB-C Cable, Anti-Ghosting', '1 Year Replacement Warranty', 0, 0, '2026-11-07 18:01:51', '2026-11-07 18:01:51'),
+(3, 'FUR-CHR-001', '8901112223333', 'Ergonomic Mesh Office Chair', 'WorkSpace', NULL, 2, 'pcs', 75.00, 130.00, 7.50, 5, 20, 'uploads/products/mesh-chair.jpg', 'Breathable Mesh Back, Adjustable Lumbar Support, 360 Swivel Nylon Base', '2 Years Structural Warranty', 0, 0, '2026-11-07 18:01:51', '2026-11-07 18:01:51'),
+(4, 'ACC-CLN-001', NULL, 'Portable Cleaning Kit', 'Vexron', 3, NULL, 'pcs', 0.00, 500.00, 0.00, 0, 0, 'uploads/products/cleaning-kit-portable.jpg', 'Portable multi-purpose cleaning kit for electronics.', 'No Warranty', 1, 1, '2026-11-21 00:00:00', '2026-11-21 00:00:00'),
+(5, 'ACC-CLN-002', NULL, 'Keyboard Multi Cleaning Kit', 'Vexron', 3, NULL, 'pcs', 0.00, 2000.00, 0.00, 0, 0, 'uploads/products/keyboard-cleaning-kit.jpg', 'Multi-function cleaning kit with keyboard wrist support.', 'No Warranty', 0, 1, '2026-11-21 00:00:00', '2026-11-21 00:00:00'),
+(6, 'LGT-TBL-001', NULL, 'Galaxy Orb Table Lamp', 'Vexron', 4, NULL, 'pcs', 0.00, 500.00, 0.00, 0, 0, 'uploads/products/galaxy-orb-lamp.webp', 'Galaxy orb table lamp.', 'No Warranty', 0, 1, '2026-11-21 00:00:00', '2026-11-21 00:00:00'),
+(7, 'COL-FIG-004', NULL, 'Gear 4 Luffy Bounce Man', 'Vexron', 6, NULL, 'pcs', 0.00, 3000.00, 0.00, 0, 0, 'uploads/products/luffy-gear-4.webp', 'Gear 4 Luffy Bounce Man collectible figure.', 'No Warranty', 0, 1, '2026-11-21 00:00:00', '2026-11-21 00:00:00'),
+(8, 'COL-FIG-005', NULL, 'Gear 5 Luffy', 'Vexron', 6, NULL, 'pcs', 0.00, 1000.00, 0.00, 0, 0, 'uploads/products/luffy-gear-5.webp', 'Gear 5 Luffy collectible figure.', 'No Warranty', 0, 1, '2026-11-21 00:00:00', '2026-11-21 00:00:00');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `product_reviews`
+--
+
+CREATE TABLE `product_reviews` (
+  `review_id` int NOT NULL,
+  `product_id` int NOT NULL,
+  `customer_id` int NOT NULL,
+  `rating` tinyint NOT NULL,
+  `comment` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
+) ;
+
+--
+-- Dumping data for table `product_reviews`
+--
+
+INSERT INTO `product_reviews` (`review_id`, `product_id`, `customer_id`, `rating`, `comment`, `created_at`) VALUES
+(1, 1, 1, 5, 'Reliable wireless mouse for our office workstations. Fast delivery from Dhaka warehouse.', '2026-11-08 10:15:00');
 
 -- --------------------------------------------------------
 
@@ -153,7 +188,9 @@ INSERT INTO `purchase_order_items` (`po_item_id`, `po_id`, `product_id`, `quanti
 --
 DELIMITER $$
 CREATE TRIGGER `trg_update_po_total` AFTER INSERT ON `purchase_order_items` FOR EACH ROW BEGIN
-    UPDATE purchase_orders SET total_amount = total_amount + NEW.quantity_ordered * NEW.unit_cost WHERE po_id = NEW.po_id;
+    UPDATE `purchase_orders`
+    SET `total_amount` = `total_amount` + (NEW.`quantity_ordered` * NEW.`unit_cost`)
+    WHERE `po_id` = NEW.`po_id`;
 END
 $$
 DELIMITER ;
@@ -169,12 +206,34 @@ CREATE TABLE `sales_orders` (
   `so_number` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `customer_id` int NOT NULL,
   `warehouse_id` int NOT NULL,
+  `order_source` enum('ADMIN','ECOMMERCE') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'ECOMMERCE',
   `status` enum('PENDING','CONFIRMED','SHIPPED','CANCELLED') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'PENDING',
+  `payment_method` enum('COD','BKASH','NAGAD','CARD','BANK') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'COD',
+  `payment_status` enum('UNPAID','PAID','REFUNDED') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'UNPAID',
+  `transaction_id` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `shipping_fee` decimal(12,2) NOT NULL DEFAULT '0.00',
+  `shipping_address` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `order_date` date NOT NULL,
   `total_amount` decimal(12,2) NOT NULL DEFAULT '0.00',
   `created_by` int DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Triggers `sales_orders`
+--
+DELIMITER $$
+CREATE TRIGGER `trg_release_stock_on_cancel` AFTER UPDATE ON `sales_orders` FOR EACH ROW BEGIN
+    IF OLD.`status` IN ('PENDING', 'CONFIRMED') AND NEW.`status` = 'CANCELLED' THEN
+        UPDATE `warehouse_stock` `ws`
+        INNER JOIN `sales_order_items` `soi` ON `ws`.`product_id` = `soi`.`product_id`
+        SET `ws`.`quantity_reserved` = GREATEST(0, `ws`.`quantity_reserved` - `soi`.`quantity`)
+        WHERE `soi`.`so_id` = NEW.`so_id`
+          AND `ws`.`warehouse_id` = NEW.`warehouse_id`;
+    END IF;
+END
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -195,12 +254,21 @@ CREATE TABLE `sales_order_items` (
 --
 DELIMITER $$
 CREATE TRIGGER `trg_reserve_stock_on_sale` AFTER INSERT ON `sales_order_items` FOR EACH ROW BEGIN
-    DECLARE warehouse INT;
-    SELECT warehouse_id INTO warehouse FROM sales_orders WHERE so_id = NEW.so_id;
-    UPDATE warehouse_stock SET quantity_reserved = quantity_reserved + NEW.quantity
-    WHERE warehouse_id = warehouse AND product_id = NEW.product_id AND NEW.quantity > 0
-      AND quantity_on_hand - quantity_reserved >= NEW.quantity;
-    IF ROW_COUNT() <> 1 THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Insufficient available stock.'; END IF;
+    DECLARE v_warehouse INT;
+    SELECT `warehouse_id` INTO v_warehouse
+    FROM `sales_orders`
+    WHERE `so_id` = NEW.`so_id`;
+
+    UPDATE `warehouse_stock`
+    SET `quantity_reserved` = `quantity_reserved` + NEW.`quantity`
+    WHERE `warehouse_id` = v_warehouse
+      AND `product_id` = NEW.`product_id`
+      AND NEW.`quantity` > 0
+      AND (`quantity_on_hand` - `quantity_reserved`) >= NEW.`quantity`;
+
+    IF ROW_COUNT() <> 1 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Insufficient available stock.';
+    END IF;
 END
 $$
 DELIMITER ;
@@ -239,21 +307,29 @@ INSERT INTO `stock_movements` (`movement_id`, `product_id`, `warehouse_id`, `mov
 --
 DELIMITER $$
 CREATE TRIGGER `trg_prevent_negative_stock` BEFORE INSERT ON `stock_movements` FOR EACH ROW BEGIN
-    DECLARE balance INT DEFAULT 0;
-    IF NEW.quantity_change < 0 THEN
-        SELECT quantity_on_hand INTO balance FROM warehouse_stock
-            WHERE warehouse_id = NEW.warehouse_id AND product_id = NEW.product_id FOR UPDATE;
-        IF balance + NEW.quantity_change < 0 THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Insufficient stock.'; END IF;
+    DECLARE v_balance INT DEFAULT 0;
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET v_balance = 0;
+
+    IF NEW.`quantity_change` < 0 THEN
+        SELECT `quantity_on_hand` INTO v_balance
+        FROM `warehouse_stock`
+        WHERE `warehouse_id` = NEW.`warehouse_id`
+          AND `product_id` = NEW.`product_id`
+        FOR UPDATE;
+
+        IF (v_balance + NEW.`quantity_change`) < 0 THEN
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Insufficient stock.';
+        END IF;
     END IF;
 END
 $$
 DELIMITER ;
 DELIMITER $$
 CREATE TRIGGER `trg_sync_warehouse_stock` AFTER INSERT ON `stock_movements` FOR EACH ROW BEGIN
-    INSERT INTO warehouse_stock (warehouse_id, product_id, quantity_on_hand)
-    VALUES (NEW.warehouse_id, NEW.product_id, NEW.quantity_change)
-    ON DUPLICATE KEY UPDATE 
-        quantity_on_hand = quantity_on_hand + NEW.quantity_change;
+    INSERT INTO `warehouse_stock` (`warehouse_id`, `product_id`, `quantity_on_hand`)
+    VALUES (NEW.`warehouse_id`, NEW.`product_id`, NEW.`quantity_change`)
+    ON DUPLICATE KEY UPDATE
+        `quantity_on_hand` = `quantity_on_hand` + NEW.`quantity_change`;
 END
 $$
 DELIMITER ;
@@ -296,22 +372,23 @@ CREATE TABLE `users` (
   `email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `password_hash` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `role` enum('ADMIN','MANAGER','STAFF','CUSTOMER') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'STAFF',
+  `customer_id` int DEFAULT NULL,
   `is_active` tinyint(1) NOT NULL DEFAULT '1',
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `customer_id` int DEFAULT NULL
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`user_id`, `username`, `email`, `password_hash`, `role`, `is_active`, `created_at`, `customer_id`) VALUES
-(1, 'admin_user', 'admin@inventory.local', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'ADMIN', 1, '2026-11-07 18:01:50', NULL),
-(2, 'manager_dhaka', 'manager@inventory.local', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'MANAGER', 1, '2026-11-07 18:01:50', NULL),
-(3, 'staff_clerk', 'staff@inventory.local', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'STAFF', 1, '2026-11-07 18:01:50', NULL),
-(4, 'admin', 'admin@gmai.com', '$2y$10$5QDiRe10CbaYvSWKkK8TPOkZYcVkha9lKsoseu39jxISiIqdctC7W', 'STAFF', 1, '2026-11-07 18:35:39', NULL),
-(5, 'admin1', 'admin1@gmail.com', '$2y$10$sr1D4kzNWz.JFOgNOSKeD.4jKbGErPVtT2n6/SIsOMNUX9hHdRFJq', 'ADMIN', 1, '2026-11-07 18:36:58', NULL),
-(6, 'admin2', 'admin2@gmail.com', '$2y$10$huadY7RUuXJGNwEI1AC4neG8HPhs4CJx54ehrlUovgbzgndY1HYB6', 'MANAGER', 1, '2026-11-07 18:37:25', NULL);
+INSERT INTO `users` (`user_id`, `username`, `email`, `password_hash`, `role`, `customer_id`, `is_active`, `created_at`) VALUES
+(1, 'admin_user', 'admin@inventory.local', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'ADMIN', NULL, 1, '2026-11-07 18:01:50'),
+(2, 'manager_dhaka', 'manager@inventory.local', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'MANAGER', NULL, 1, '2026-11-07 18:01:50'),
+(3, 'staff_clerk', 'staff@inventory.local', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'STAFF', NULL, 1, '2026-11-07 18:01:50'),
+(4, 'admin', 'admin@gmai.com', '$2y$10$5QDiRe10CbaYvSWKkK8TPOkZYcVkha9lKsoseu39jxISiIqdctC7W', 'STAFF', NULL, 1, '2026-11-07 18:35:39'),
+(5, 'admin1', 'admin1@gmail.com', '$2y$10$sr1D4kzNWz.JFOgNOSKeD.4jKbGErPVtT2n6/SIsOMNUX9hHdRFJq', 'ADMIN', NULL, 1, '2026-11-07 18:36:58'),
+(6, 'admin2', 'admin2@gmail.com', '$2y$10$huadY7RUuXJGNwEI1AC4neG8HPhs4CJx54ehrlUovgbzgndY1HYB6', 'MANAGER', NULL, 1, '2026-11-07 18:37:25'),
+(7, 'apex_buyer', 'procurement@apexsoft.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'CUSTOMER', 1, 1, '2026-11-07 18:40:00');
 
 -- --------------------------------------------------------
 
@@ -348,6 +425,29 @@ CREATE TABLE `vw_reorder_alerts` (
 ,`total_on_hand` decimal(32,0)
 ,`available_to_sell` decimal(33,0)
 ,`reorder_point` int
+);
+
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `vw_storefront_products`
+-- (See below for the actual view)
+--
+CREATE TABLE `vw_storefront_products` (
+`product_id` int
+,`sku` varchar(50)
+,`product_name` varchar(200)
+,`brand` varchar(100)
+,`category_id` int
+,`category_name` varchar(100)
+,`product_image` varchar(255)
+,`specifications` text
+,`warranty_period` varchar(100)
+,`selling_price` decimal(12,2)
+,`tax_rate` decimal(5,2)
+,`is_featured` tinyint(1)
+,`available_to_sell` decimal(33,0)
+,`stock_status` varchar(12)
 );
 
 -- --------------------------------------------------------
@@ -395,7 +495,12 @@ CREATE TABLE `warehouse_stock` (
 INSERT INTO `warehouse_stock` (`warehouse_id`, `product_id`, `quantity_on_hand`, `quantity_reserved`, `aisle_bin_location`, `updated_at`) VALUES
 (1, 1, 40, 0, 'Aisle 1 - Bin A1', '2026-11-07 18:01:51'),
 (1, 2, 50, 0, 'Aisle 1 - Bin A2', '2026-11-07 18:01:51'),
-(1, 3, 4, 0, 'Aisle 4 - Bulk Zone', '2026-11-07 18:01:51');
+(1, 3, 4, 0, 'Aisle 4 - Bulk Zone', '2026-11-07 18:01:51'),
+(1, 4, 25, 0, 'Aisle 2 - Bin B1', '2026-11-21 00:00:00'),
+(1, 5, 15, 0, 'Aisle 2 - Bin B2', '2026-11-21 00:00:00'),
+(1, 6, 20, 0, 'Aisle 3 - Bin C1', '2026-11-21 00:00:00'),
+(1, 7, 10, 0, 'Aisle 3 - Bin C2', '2026-11-21 00:00:00'),
+(1, 8, 10, 0, 'Aisle 3 - Bin C3', '2026-11-21 00:00:00');
 
 --
 -- Indexes for dumped tables
@@ -424,6 +529,14 @@ ALTER TABLE `products`
   ADD UNIQUE KEY `barcode` (`barcode`),
   ADD KEY `category_id` (`category_id`),
   ADD KEY `preferred_supplier_id` (`preferred_supplier_id`);
+
+--
+-- Indexes for table `product_reviews`
+--
+ALTER TABLE `product_reviews`
+  ADD PRIMARY KEY (`review_id`),
+  ADD KEY `product_id` (`product_id`),
+  ADD KEY `customer_id` (`customer_id`);
 
 --
 -- Indexes for table `purchase_orders`
@@ -508,7 +621,7 @@ ALTER TABLE `warehouse_stock`
 -- AUTO_INCREMENT for table `categories`
 --
 ALTER TABLE `categories`
-  MODIFY `category_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `category_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `customers`
@@ -520,7 +633,13 @@ ALTER TABLE `customers`
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `product_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `product_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
+--
+-- AUTO_INCREMENT for table `product_reviews`
+--
+ALTER TABLE `product_reviews`
+  MODIFY `review_id` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `purchase_orders`
@@ -562,7 +681,7 @@ ALTER TABLE `suppliers`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `user_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `warehouses`
@@ -577,18 +696,7 @@ ALTER TABLE `warehouses`
 --
 DROP TABLE IF EXISTS `vw_inventory_valuation`;
 
-CREATE VIEW vw_inventory_valuation AS
-SELECT p.product_id, p.sku, p.product_name, c.name AS category_name,
-       p.cost_price, p.selling_price, p.selling_price - p.cost_price AS unit_margin,
-       COALESCE(SUM(s.quantity_on_hand), 0) AS total_on_hand,
-       COALESCE(SUM(s.quantity_reserved), 0) AS total_reserved,
-       COALESCE(SUM(s.quantity_on_hand - s.quantity_reserved), 0) AS available_to_sell,
-       COALESCE(SUM(s.quantity_on_hand), 0) * p.cost_price AS total_inventory_cost,
-       p.reorder_point
-FROM products AS p
-LEFT JOIN categories AS c ON c.category_id = p.category_id
-LEFT JOIN warehouse_stock AS s ON s.product_id = p.product_id
-GROUP BY p.product_id;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vw_inventory_valuation`  AS SELECT `p`.`product_id` AS `product_id`, `p`.`sku` AS `sku`, `p`.`product_name` AS `product_name`, `c`.`name` AS `category_name`, `p`.`cost_price` AS `cost_price`, `p`.`selling_price` AS `selling_price`, (`p`.`selling_price` - `p`.`cost_price`) AS `unit_margin`, coalesce(sum(`ws`.`quantity_on_hand`),0) AS `total_on_hand`, coalesce(sum(`ws`.`quantity_reserved`),0) AS `total_reserved`, coalesce(sum((`ws`.`quantity_on_hand` - `ws`.`quantity_reserved`)),0) AS `available_to_sell`, (coalesce(sum(`ws`.`quantity_on_hand`),0) * `p`.`cost_price`) AS `total_inventory_cost`, `p`.`reorder_point` AS `reorder_point` FROM ((`products` `p` left join `categories` `c` on((`p`.`category_id` = `c`.`category_id`))) left join `warehouse_stock` `ws` on((`p`.`product_id` = `ws`.`product_id`))) GROUP BY `p`.`product_id` ;
 
 -- --------------------------------------------------------
 
@@ -597,10 +705,16 @@ GROUP BY p.product_id;
 --
 DROP TABLE IF EXISTS `vw_reorder_alerts`;
 
-CREATE VIEW vw_reorder_alerts AS
-SELECT product_id, sku, product_name, category_name, total_on_hand, available_to_sell, reorder_point
-FROM vw_inventory_valuation
-WHERE available_to_sell <= reorder_point;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vw_reorder_alerts`  AS SELECT `vw_inventory_valuation`.`product_id` AS `product_id`, `vw_inventory_valuation`.`sku` AS `sku`, `vw_inventory_valuation`.`product_name` AS `product_name`, `vw_inventory_valuation`.`category_name` AS `category_name`, `vw_inventory_valuation`.`total_on_hand` AS `total_on_hand`, `vw_inventory_valuation`.`available_to_sell` AS `available_to_sell`, `vw_inventory_valuation`.`reorder_point` AS `reorder_point` FROM `vw_inventory_valuation` WHERE (`vw_inventory_valuation`.`available_to_sell` <= `vw_inventory_valuation`.`reorder_point`) ;
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `vw_storefront_products`
+--
+DROP TABLE IF EXISTS `vw_storefront_products`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vw_storefront_products`  AS SELECT `p`.`product_id` AS `product_id`, `p`.`sku` AS `sku`, `p`.`product_name` AS `product_name`, `p`.`brand` AS `brand`, `p`.`category_id` AS `category_id`, `c`.`name` AS `category_name`, `p`.`product_image` AS `product_image`, `p`.`specifications` AS `specifications`, `p`.`warranty_period` AS `warranty_period`, `p`.`selling_price` AS `selling_price`, `p`.`tax_rate` AS `tax_rate`, `p`.`is_featured` AS `is_featured`, coalesce(sum((`ws`.`quantity_on_hand` - `ws`.`quantity_reserved`)),0) AS `available_to_sell`, (case when (coalesce(sum((`ws`.`quantity_on_hand` - `ws`.`quantity_reserved`)),0) <= 0) then 'OUT_OF_STOCK' when (coalesce(sum((`ws`.`quantity_on_hand` - `ws`.`quantity_reserved`)),0) <= `p`.`reorder_point`) then 'LOW_STOCK' else 'IN_STOCK' end) AS `stock_status` FROM ((`products` `p` left join `categories` `c` on((`p`.`category_id` = `c`.`category_id`))) left join `warehouse_stock` `ws` on((`p`.`product_id` = `ws`.`product_id`))) WHERE (`p`.`is_active` = 1) GROUP BY `p`.`product_id` ;
 
 --
 -- Constraints for dumped tables
@@ -618,6 +732,14 @@ ALTER TABLE `categories`
 ALTER TABLE `products`
   ADD CONSTRAINT `products_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `categories` (`category_id`) ON DELETE SET NULL,
   ADD CONSTRAINT `products_ibfk_2` FOREIGN KEY (`preferred_supplier_id`) REFERENCES `suppliers` (`supplier_id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `product_reviews`
+--
+ALTER TABLE `product_reviews`
+  ADD CONSTRAINT `product_reviews_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `product_reviews_ibfk_2` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`customer_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `chk_review_rating` CHECK (`rating` BETWEEN 1 AND 5);
 
 --
 -- Constraints for table `purchase_orders`
@@ -661,7 +783,7 @@ ALTER TABLE `stock_movements`
 -- Constraints for table `users`
 --
 ALTER TABLE `users`
-  ADD CONSTRAINT `fk_user_customer` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`customer_id`);
+  ADD CONSTRAINT `fk_user_customer` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`customer_id`) ON DELETE SET NULL;
 
 --
 -- Constraints for table `warehouses`

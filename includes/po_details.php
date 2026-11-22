@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../config/db.php';
 $places = mysqli_query($conn, "SELECT warehouse_id FROM warehouses WHERE warehouse_id=$warehouse_id AND is_active=1");
 $partners = mysqli_query($conn, "SELECT supplier_id FROM suppliers WHERE supplier_id=$party_id AND is_active=1");
 if ($places == false) {
@@ -26,7 +27,7 @@ if (isset($date[0])) {
 if ($action == 'create') {
     $number = uniqid('PO-');
     $sql = "INSERT INTO purchase_orders (supplier_id, warehouse_id, expected_date, po_number, order_date, created_by)
-                VALUES ($party_id, $warehouse_id, $delivery_date, '$number', CURRENT_DATE, $user_id)";
+                VALUES ($party_id, $warehouse_id, $delivery_date, '$number', CURRENT_DATE, {$_SESSION['user_id']})";
     if (mysqli_query($conn, $sql) == false) {
         $error = 'Could not create the order.';
         return;

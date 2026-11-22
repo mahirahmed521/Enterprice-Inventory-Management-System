@@ -1,5 +1,7 @@
 <?php
 require_once __DIR__ . '/../includes/check_fields.php';
+require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../config/db.php';
 $pageTitle = 'Products';
 $section = 'Directory';
 $error = '';
@@ -17,55 +19,75 @@ $tax_rate = '0';
 $reorder_point = '10';
 $reorder_quantity = '50';
 $is_active = '1';
+$brand = '';
+$specifications = '';
+$warranty_period = '1 Year Official Warranty';
+$is_featured = '0';
+$product_image = 'uploads/products/default.png';
+if (isset($_POST['brand'])) {
+    $brand = $_POST['brand'];
+}
+if (isset($_POST['specifications'])) {
+    $specifications = $_POST['specifications'];
+}
+if (isset($_POST['warranty_period'])) {
+    $warranty_period = $_POST['warranty_period'];
+}
+if (isset($_POST['is_featured'])) {
+    $is_featured = $_POST['is_featured'];
+}
+if (isset($_POST['existing_product_image'])) {
+    $product_image = $_POST['existing_product_image'];
+}
 
 if (isset($_POST['action'])) {
-    $action = trim($_POST['action']);
+    $action = $_POST['action'];
 }
 if (isset($_POST['sku'])) {
-    $sku = trim($_POST['sku']);
+    $sku = $_POST['sku'];
 }
 if (isset($_POST['product_name'])) {
-    $product_name = trim($_POST['product_name']);
+    $product_name = $_POST['product_name'];
 }
 if (isset($_POST['barcode'])) {
-    $barcode = trim($_POST['barcode']);
+    $barcode = $_POST['barcode'];
 }
 if (isset($_POST['category_id'])) {
-    $category_id = trim($_POST['category_id']);
+    $category_id = $_POST['category_id'];
 }
 if (isset($_POST['preferred_supplier_id'])) {
-    $preferred_supplier_id = trim($_POST['preferred_supplier_id']);
+    $preferred_supplier_id = $_POST['preferred_supplier_id'];
 }
 if (isset($_POST['unit_of_measure'])) {
-    $unit_of_measure = trim($_POST['unit_of_measure']);
+    $unit_of_measure = $_POST['unit_of_measure'];
 }
 if (isset($_POST['cost_price'])) {
-    $cost_price = trim($_POST['cost_price']);
+    $cost_price = $_POST['cost_price'];
 }
 if (isset($_POST['selling_price'])) {
-    $selling_price = trim($_POST['selling_price']);
+    $selling_price = $_POST['selling_price'];
 }
 if (isset($_POST['tax_rate'])) {
-    $tax_rate = trim($_POST['tax_rate']);
+    $tax_rate = $_POST['tax_rate'];
 }
 if (isset($_POST['reorder_point'])) {
-    $reorder_point = trim($_POST['reorder_point']);
+    $reorder_point = $_POST['reorder_point'];
 }
 if (isset($_POST['reorder_quantity'])) {
-    $reorder_quantity = trim($_POST['reorder_quantity']);
+    $reorder_quantity = $_POST['reorder_quantity'];
 }
 if (isset($_POST['is_active'])) {
-    $is_active = trim($_POST['is_active']);
+    $is_active = $_POST['is_active'];
 }
 $search = '';
 $status = '';
 if (isset($_GET['q'])) {
-    $search = trim($_GET['q']);
+    $search = $_GET['q'];
 }
 if (isset($_GET['status'])) {
     $status = $_GET['status'];
 }
-require '../includes/auth.php';
+
 if ($warehouse_access == false) {
     exit('Access denied.');
 }
@@ -105,6 +127,14 @@ if ($can_edit) {
             $reorder_point = $record['reorder_point'];
             $reorder_quantity = $record['reorder_quantity'];
             $is_active = $record['is_active'];
+            $brand = $record['brand'];
+            $specifications = $record['specifications'];
+            $warranty_period = $record['warranty_period'];
+            $is_featured = $record['is_featured'];
+            $product_image = $record['product_image'];
+            if ($product_image == '') {
+                $product_image = 'uploads/products/default.png';
+            }
         }
     }
 }
@@ -152,6 +182,48 @@ if ($action == 'delete') {
         mysqli_query($conn, 'ROLLBACK');
     }
 } elseif ($action == 'save') {
+    $previous_image = $product_image;
+    $img_name = '';
+    $img_tmp = '';
+    $img_error = 0;
+    $img_size = 0;
+    $upload_error = '';
+    $move_to = '';
+    if (isset($_FILES['product_image']['name'])) {
+        $img_name = $_FILES['product_image']['name'];
+    }
+    if (isset($_FILES['product_image']['tmp_name'])) {
+        $img_tmp = $_FILES['product_image']['tmp_name'];
+    }
+    if (isset($_FILES['product_image']['error'])) {
+        $img_error = $_FILES['product_image']['error'];
+    }
+    if (isset($_FILES['product_image']['size'])) {
+        $img_size = $_FILES['product_image']['size'];
+    }
+    if ($img_name == '') {
+        if ($product_image == '') {
+            $product_image = 'uploads/products/default.png';
+        }
+    } else {
+        // Only real JPG, PNG, WEBP or GIF pictures are allowed
+        $img_ext = strtolower(pathinfo($img_name, PATHINFO_EXTENSION));
+        $allowed_ext = array('jpg', 'jpeg', 'png', 'webp', 'gif');
+        if ($img_error != 0) {
+            $upload_error = 'The image did not upload. Try a smaller file.';
+        } elseif (in_array($img_ext, $allowed_ext) == false) {
+            $upload_error = 'Use a JPG, PNG, WEBP or GIF image.';
+        } elseif ($img_size > 5000000) {
+            $upload_error = 'The image is larger than 5 MB.';
+        } elseif (getimagesize($img_tmp) == false) {
+            $upload_error = 'That file is not a real image.';
+        } else {
+            $safe_name = preg_replace('/[^A-Za-z0-9._-]/', '_', basename($img_name));
+            $new_file_name = time() . '_' . $safe_name;
+            $move_to = __DIR__ . '/../uploads/products/' . $new_file_name;
+            $product_image = 'uploads/products/' . $new_file_name;
+        }
+    }
     $editor = 'edit';
     $valid_status = false;
     if ($is_active === '1') {
@@ -174,9 +246,9 @@ if ($action == 'delete') {
     } elseif (is_numeric($tax_rate) == false) {
         $error = 'Enter a numeric tax rate.';
     } elseif ($cost_price < 0) {
-        $error = 'Selling price must be zero or positive.';
-    } elseif ($selling_price < 0) {
         $error = 'Cost price must be zero or positive.';
+    } elseif ($selling_price < 0) {
+        $error = 'Selling price must be zero or positive.';
     } elseif ($tax_rate < 0) {
         $error = 'Tax rate must be zero or positive.';
     } elseif ($reorder_point == '') {
@@ -218,11 +290,31 @@ if ($action == 'delete') {
     }
 
     if ($error == '') {
+        if ($upload_error != '') {
+            $error = $upload_error;
+        }
+    }
+    if ($error == '') {
+        if ($move_to != '') {
+            if (move_uploaded_file($img_tmp, $move_to) == false) {
+                $error = 'Could not upload the product image.';
+            }
+        }
+    }
+    if ($error != '') {
+        $product_image = $previous_image;
+    }
+
+    if ($error == '') {
         $sql_text = [
             'sku' => $sku,
             'product_name' => $product_name,
             'barcode' => $barcode,
-            'unit_of_measure' => $unit_of_measure
+            'unit_of_measure' => $unit_of_measure,
+            'brand' => $brand,
+            'specifications' => $specifications,
+            'warranty_period' => $warranty_period,
+            'product_image' => $product_image
         ];
         include __DIR__ . '/../includes/quote_fields.php';
         $category_id_sql = 'NULL';
@@ -267,8 +359,8 @@ if ($action == 'delete') {
         }
 
         if ($id == 0) {
-            $sql = "INSERT INTO products (sku, product_name, barcode, category_id, preferred_supplier_id, unit_of_measure, cost_price, selling_price, tax_rate, reorder_point, reorder_quantity, is_active)
-                VALUES ('$sql_text[sku]', '$sql_text[product_name]', $barcode_value, $category_id_sql, $preferred_supplier_id_sql, '$sql_text[unit_of_measure]', '$cost_price', '$selling_price', '$tax_rate', '$reorder_point', '$reorder_quantity', '$is_active')";
+            $sql = "INSERT INTO products (sku, product_name, barcode, category_id, preferred_supplier_id, unit_of_measure, cost_price, selling_price, tax_rate, reorder_point, reorder_quantity, is_active, brand, specifications, warranty_period, is_featured, product_image)
+                VALUES ('$sql_text[sku]', '$sql_text[product_name]', $barcode_value, $category_id_sql, $preferred_supplier_id_sql, '$sql_text[unit_of_measure]', '$cost_price', '$selling_price', '$tax_rate', '$reorder_point', '$reorder_quantity', '$is_active', '$sql_text[brand]', '$sql_text[specifications]', '$sql_text[warranty_period]', '$is_featured', '$sql_text[product_image]')";
         } else {
             $sql = "UPDATE products SET sku='$sql_text[sku]',
                     product_name='$sql_text[product_name]',
@@ -281,7 +373,12 @@ if ($action == 'delete') {
                     tax_rate='$tax_rate',
                     reorder_point='$reorder_point',
                     reorder_quantity='$reorder_quantity',
-                    is_active='$is_active'
+                    is_active='$is_active',
+                    brand='$sql_text[brand]',
+                    specifications='$sql_text[specifications]',
+                    warranty_period='$sql_text[warranty_period]',
+                    is_featured='$is_featured',
+                    product_image='$sql_text[product_image]'
                     WHERE product_id=$id";
         }
         if (mysqli_query($conn, $sql) == false) {
@@ -299,7 +396,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 
-$columns = 'p.product_id,p.product_name,p.sku,p.selling_price,p.unit_of_measure,p.is_active,p.reorder_point,
+$columns = 'p.product_id,p.product_name,p.sku,p.selling_price,p.unit_of_measure,p.is_active,p.reorder_point,p.brand,p.product_image,
             v.category_name AS category,v.available_to_sell';
 if ($can_edit) {
     $columns = $columns . ',p.cost_price';

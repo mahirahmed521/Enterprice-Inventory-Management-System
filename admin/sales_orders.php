@@ -1,5 +1,7 @@
 <?php
 require_once __DIR__ . '/../includes/check_fields.php';
+require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../config/db.php';
 $pageTitle = 'Sales orders';
 $section = 'Order management';
 $error = '';
@@ -46,22 +48,22 @@ $line_id = '';
 $quantity = '';
 
 if (isset($_POST['action'])) {
-    $action = trim($_POST['action']);
+    $action = $_POST['action'];
 }
 if (isset($_POST['warehouse_id'])) {
-    $warehouse_id = trim($_POST['warehouse_id']);
+    $warehouse_id = $_POST['warehouse_id'];
 }
 if (isset($_POST['party_id'])) {
-    $party_id = trim($_POST['party_id']);
+    $party_id = $_POST['party_id'];
 }
 if (isset($_POST['product_id'])) {
-    $product_id = trim($_POST['product_id']);
+    $product_id = $_POST['product_id'];
 }
 if (isset($_POST['line_id'])) {
-    $line_id = trim($_POST['line_id']);
+    $line_id = $_POST['line_id'];
 }
 if (isset($_POST['quantity'])) {
-    $quantity = trim($_POST['quantity']);
+    $quantity = $_POST['quantity'];
 }
 $valid_digits = isset($warehouse_id[0]);
 $digit_position = 0;
@@ -119,7 +121,7 @@ while (isset($line_id[$digit_position])) {
 if ($valid_digits == false) {
     $line_id = 0;
 }
-require '../includes/auth.php';
+
 $can_prepare = $supervisor;
 $is_customer = false;
 if ($account['role'] == 'CUSTOMER') {
@@ -226,7 +228,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $error = 'Only a draft order can be edited.';
         }
     } else {
-        include '../includes/so_status.php';
+        if ($action == 'mark_paid') {
+            if ($supervisor) {
+                if (mysqli_query($conn, "UPDATE sales_orders SET payment_status='PAID' WHERE so_id=$id") == false) {
+                    $error = 'Could not update payment status.';
+                }
+            } else {
+                $error = 'This action is unavailable.';
+            }
+        } else {
+            include '../includes/so_status.php';
+        }
     }
     if ($error == '') {
         if (mysqli_query($conn, 'COMMIT')) {

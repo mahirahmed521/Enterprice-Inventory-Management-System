@@ -1,4 +1,14 @@
 <?php
+require_once __DIR__ . '/../config/db.php';
+if (!isset($id)) {
+    $error = 'Invalid purchase order.';
+    return;
+}
+if (!is_numeric($id)) {
+    $error = 'Invalid purchase order.';
+    return;
+}
+$id = (int) $id;
 if ($action == 'delete') {
 
     if (mysqli_query($conn, "DELETE FROM purchase_orders WHERE po_id=$id")) {
@@ -33,6 +43,11 @@ if ($needs_quantity) {
     }
 }
 if ($action == 'add') {
+    if (!isset($product_id)) {
+        $error = 'Choose an active product.';
+        return;
+    }
+    $product_id = (int) $product_id;
     $result = mysqli_query($conn, "SELECT cost_price FROM products WHERE product_id=$product_id AND is_active=1 FOR UPDATE");
     if ($result == false) {
         $error = 'Could not read the product price.';

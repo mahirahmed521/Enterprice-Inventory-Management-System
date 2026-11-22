@@ -2,7 +2,7 @@
     <article class="metric metric-tile"><i class="bx bx-receipt" aria-hidden="true"></i>My open orders<strong><?php echo $summary['open_orders']; ?></strong></article>
     <article class="metric metric-tile"><i class="bx bx-package" aria-hidden="true"></i>My shipments<strong><?php echo $summary['shipments']; ?></strong></article>
 </div><h2 class="h5">Quick access</h2><div class="quick-links">
-    <a href="../catalog.php">Catalog</a>
+    <a href="../shop.php">Shop</a>
     <a href="sales_orders.php">Sales orders</a>
     <a href="customer_profile.php">Customer profile</a>
 </div><section class="surface records-surface"><div class="section-heading"><h2>My latest orders</h2></div>
@@ -18,5 +18,5 @@
 </tr>
 <?php } ?>
 </tbody></table></div>
-<?php if ($rows->num_rows == 0) { ?><p class="empty-state">No records to show.</p><?php } ?>
+<?php if (mysqli_num_rows($rows) == 0) { ?><p class="empty-state">No records to show.</p><?php } ?>
 </section>

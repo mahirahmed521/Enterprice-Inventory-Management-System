@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../includes/check_fields.php';
+require_once __DIR__ . '/../config/db.php';
 session_start();
 $pageTitle = 'Create an account';
 $error = '';
@@ -10,19 +11,19 @@ $role = '';
 $address = '';
 
 if (isset($_POST['username'])) {
-    $username = trim($_POST['username']);
+    $username = $_POST['username'];
 }
 if (isset($_POST['email'])) {
-    $email = trim($_POST['email']);
+    $email = $_POST['email'];
 }
 if (isset($_POST['password'])) {
-    $password = trim($_POST['password']);
+    $password = $_POST['password'];
 }
 if (isset($_POST['role'])) {
-    $role = trim($_POST['role']);
+    $role = $_POST['role'];
 }
 if (isset($_POST['address'])) {
-    $address = trim($_POST['address']);
+    $address = $_POST['address'];
 }
 if (isset($_SESSION['user_id'])) {
     header('Location: dashboard.php');
@@ -50,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } elseif ($valid_role == false) {
         $error = 'Choose a listed role.';
     } else {
-        require '../config/db.php';
+        
         $sql_text = [
             'username' => $username,
             'email' => $email,

@@ -1,5 +1,7 @@
 <?php
 require_once __DIR__ . '/../includes/check_fields.php';
+require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../config/db.php';
 $pageTitle = 'Warehouses';
 $section = 'Directory';
 $error = '';
@@ -12,25 +14,25 @@ $manager_id = '';
 $is_active = '1';
 
 if (isset($_POST['action'])) {
-    $action = trim($_POST['action']);
+    $action = $_POST['action'];
 }
 if (isset($_POST['warehouse_code'])) {
-    $warehouse_code = trim($_POST['warehouse_code']);
+    $warehouse_code = $_POST['warehouse_code'];
 }
 if (isset($_POST['warehouse_name'])) {
-    $warehouse_name = trim($_POST['warehouse_name']);
+    $warehouse_name = $_POST['warehouse_name'];
 }
 if (isset($_POST['location_address'])) {
-    $location_address = trim($_POST['location_address']);
+    $location_address = $_POST['location_address'];
 }
 if (isset($_POST['manager_id'])) {
-    $manager_id = trim($_POST['manager_id']);
+    $manager_id = $_POST['manager_id'];
 }
 if (isset($_POST['is_active'])) {
-    $is_active = trim($_POST['is_active']);
+    $is_active = $_POST['is_active'];
 }
 
-require '../includes/auth.php';
+
 if ($supervisor == false) {
     exit('Access denied.');
 }

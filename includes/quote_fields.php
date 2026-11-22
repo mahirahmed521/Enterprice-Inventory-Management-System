@@ -1,4 +1,10 @@
 <?php
+if (isset($sql_text) == false) {
+    $sql_text = array();
+}
+if (is_array($sql_text) == false) {
+    $sql_text = array();
+}
 $names = array_keys($sql_text);
 $field_number = 0;
 while (isset($names[$field_number])) {
